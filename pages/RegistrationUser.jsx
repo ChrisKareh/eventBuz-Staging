@@ -145,7 +145,7 @@ const RegistrationUser = () => {
     <>
         <div className="login">
             <div className="HeaderTitle">
-                <p className="titleText">Sign Up</p>
+                <p className="titleText">Sign p</p>
             </div>
             <div className="SignupField">
                 <div className="Input">
