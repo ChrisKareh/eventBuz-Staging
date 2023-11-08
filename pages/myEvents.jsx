@@ -69,7 +69,7 @@ const myEvents = () => {
           axios.request(config)
           .then((response) => {
             console.log(response.data.data);
-            // setEvents(response.data)
+            setEvents(response.data.data)
           })
           .catch((error) => {
             console.log(error);
@@ -84,9 +84,9 @@ const myEvents = () => {
             <SecondaryHeader />
 
 
-            <div className="Home"style={{height: '100vh'}}>
+            <div className="Home"style={{minHeight: '210vh'}}>
                 <div style={{paddingTop: 100}}className="top-left-Profile">
-                <button onClick={() => {router.push('/createEvent')}} className="justAbutton" style={{zIndex: 1000000, marginTop: 90}}> <span style={{marginLeft: 18}}>Create Event</span> </button>
+                <button onClick={() => {router.push('/createEvent')}} className="justAbutton" style={{zIndex: 1000000, marginTop: -20}}> <span style={{marginLeft: 18}}>Create Event</span> </button>
                     {/* <img className="userImage" src={image1.src} /> */}
                     <eventsHeader />
                     <EventTable events={events} />
@@ -95,42 +95,7 @@ const myEvents = () => {
 
 
 
-                {/* <div className="top-right-profile" style={{flexDirection:"column"}}>
-                    <div className="emblaV" style={{marginTop:40, width: "100%"}}>
-                        <div className="embla__viewportV" ref={emblaMainRef}>
-                            <div className="embla__containerV">
-                                {SLIDES.map((index) => (
-                                    <div className="embla__slideV" key={index}>
-                                        <div className="embla__slide__numberV">
-                                            <span>{index + 1}</span>
-                                        </div>
-                                        <img
-                                            className="embla__slide__imgV"
-                                            src={imageByIndex(index)}
-                                            alt="Your alt text"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="embla-thumbs" style={{width:"25%", height:"25%" ,marginLeft: 30}}>
-                        <div className="embla-thumbs__viewport" ref={emblaThumbsRef}>
-                            <div className="embla-thumbs__container">
-                                {SLIDES.map((index) => (
-                                    <Thumb
-                                        onClick={() => onThumbClick(index)}
-                                        selected={index === selectedIndex}
-                                        index={index}
-                                        imgSrc={imageByIndex(index)}
-                                        key={index}
-                                    />
 
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div> */}
 
             </div>
 

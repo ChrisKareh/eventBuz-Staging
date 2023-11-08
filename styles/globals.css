@@ -115,6 +115,7 @@ a {
 
 .Home{
   display: grid;
+  
 }
 
 .top-left {
@@ -1086,7 +1087,7 @@ hr.solid{
 
   min-width: 100%;
   left: 0;
-  height: 7%;
+  height: 50px;
 
   /* box-shadow: 0 0 50px rgba(0, 0, 0, 0.2); */
   background: #33368D;

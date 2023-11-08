@@ -46,7 +46,7 @@ export default function CreateEvent() {
   const [fields, setFields] = useState([{ id: 1, name: '', field_type: 'Text', required: false }]);
   const [fieldsStrigified, setfieldsStringified] = useState([])
 
-  const [ticketFields, setTicketFields] = useState([{ categoryName: '', price: '', nbReservations: '' }]);
+  const [ticketFields, setTicketFields] = useState([{ name: '', price: '', number_of_tickets: '' }]);
   const [ticketFieldsStringified, setticketFieldsStringified] = useState([])
 
   const [inputValues, setInputValues] = useState([])
@@ -234,6 +234,8 @@ const selectStyles = {
     const axios = require('axios');
     const Token = localStorage.getItem('access_Token')
     const createEvent_ID = localStorage.getItem('createEvent_ID')
+    const fieldsString = JSON.stringify(fields)
+    const priceCategoryString = JSON.stringify(ticketFields)
     console.log("[++] EVENT OPTIONS DATA")
     console.log("INPUT VALUE",inputValue)
     console.log("reservation", reservations)
@@ -258,8 +260,8 @@ const selectStyles = {
             reservation:reservations,
             event_id:createEvent_ID,
             bookingType:bookingType,
-            additional_fields: fieldsStrigified,
-            pricing_category:ticketFieldsStringified,
+            additional_fields: fieldsString,
+            pricing_category:priceCategoryString,
             option_image: imageSponsor,
             max_nb_of_order: maxNbReservations,
             terms_conditions: termsConditions,
@@ -277,6 +279,37 @@ const selectStyles = {
         console.log(error)
     })
 }
+    const createAdditionalFields = () => {
+      const axios = require('axios');
+      const createEvent_ID = localStorage.getItem('createEvent_ID')
+      const Token = localStorage.getItem('access_Token')
+      const fieldsString = JSON.stringify(fields)
+      console.log("Event ID in Additional Fields", createEvent_ID)
+
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/create-event-additional-field',
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Accept': 'application/json', 
+          'Authorization': 'Bearer '+Token, 
+          
+        },
+        data : {
+          fields: fieldsString,
+          event_id: createEvent_ID,
+        }
+      };
+
+      axios.request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
 
   
   const changeHandler = value => {
@@ -308,6 +341,10 @@ const selectStyles = {
       case "Options":
         createEventOptions(inputValues)
         break;
+      case "Additional Fields":
+        createAdditionalFields()
+        break;
+        
     }
 
   }
@@ -401,7 +438,7 @@ const removeWebsiteInput = (index) => {
 };
 
 const addTicketField = () => {
-  setTicketFields([...ticketFields, { categoryName: '', price: '', nbReservations: '' }]);
+  setTicketFields([...ticketFields, { name: '', price: '', number_of_tickets: '' }]);
 };
 const removeTicketField = (index) => {
   const newTicketFields = [...ticketFields];
@@ -415,7 +452,7 @@ const removeTicketField = (index) => {
     setInputValues({})
   }
   const handleAddField = () => {
-    setTicketFields([...ticketFields, { categoryName: '', price: '', nbReservations: '' }]);
+    setTicketFields([...ticketFields, { name: '', price: '', number_of_tickets: '' }]);
   };
 
   const handleBookingTypeChange = (selectedOption) => {
@@ -625,7 +662,7 @@ const createEventVenue = async(inputValue) => {
                                     type="text" 
                                     placeholder="Category Name" 
                                     value={field.categoryName} 
-                                    onChange={(e) => handleTicketInputChange(idx, 'categoryName', e)}
+                                    onChange={(e) => handleTicketInputChange(idx, 'name', e)}
                                     style={{backgroundColor: "#3b3b3b"}}
                                 />
                                 <input 
@@ -639,7 +676,7 @@ const createEventVenue = async(inputValue) => {
                                     type="number" 
                                     placeholder="NB Reservations" 
                                     value={field.nbReservations} 
-                                    onChange={(e) => handleTicketInputChange(idx, 'nbReservations', e)}
+                                    onChange={(e) => handleTicketInputChange(idx, 'number_of_tickets', e)}
                                     style={{backgroundColor: "#3b3b3b"}}
                                 />
                                 <button onClick={() => removeTicketField(idx)}>Remove</button>
