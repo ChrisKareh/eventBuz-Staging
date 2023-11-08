@@ -351,8 +351,8 @@ div.rightSide{
   text-align: right;
   transition: all 0.6s ease;
   position: absolute;
-  right: 9%;
-  top: 30%;
+  right: 9.5%;
+  top: 23.5%;
   font-family: sans-serif;
 }
 .signinButton:hover {

@@ -132,7 +132,7 @@ const login = () =>{
         return () => {
             document.removeEventListener("keydown", listener);
         };
-    }, [radioValue]);
+    }, [email]);
 
     useEffect(() => {
         const Token = localStorage.getItem('access_Token')
@@ -155,7 +155,7 @@ const login = () =>{
                     
                         <div className="SigninField">
                             <a style={{marginTop: 80}}>Email</a>
-                            <input style={{width: "50%", marginLeft: 40}} type="text" name="text" className="input" onChange={e => {setEmail(e.currentTarget.value)}}></input>
+                            <input style={{width: "50%", marginLeft: 40, backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setEmail(e.currentTarget.value)}}></input>
                         </div>
                     
 

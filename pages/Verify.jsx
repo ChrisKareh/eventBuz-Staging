@@ -117,7 +117,7 @@ function Verify() {
                             }
                             }, timeout);
                         }} className="VerifyBttn" type="submit">Verify</button>
-                        <button style={{backgroundColor: 'black', color: 'pink'}} onClick={()=>{Router.push("/userProfile")}} className="VerifyBttn" type="submit">Skip</button>
+                        <button style={{backgroundColor: 'black', color: 'pink'}} onClick={()=>{router.push("/userProfile")}} className="VerifyBttn" type="submit">Skip</button>
 
                     </div>
                 </div>

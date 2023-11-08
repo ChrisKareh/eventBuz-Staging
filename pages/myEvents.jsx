@@ -16,6 +16,7 @@ import ThirdHeader from "@/Components/ThirdHeader";
 import { Table } from "@radix-ui/themes";
 import eventsHeader from "@/Components/eventsHeader";
 import { Router, useRouter } from "next/router";
+import EventTable from "@/Components/eventsTable";
 const myEvents = () => {
 
     const OPTIONS = {axis: 'y'}
@@ -36,6 +37,7 @@ const myEvents = () => {
 
     const [email, setemail] = useState('')
     const [phoneNumber, setphoneNumber] = useState('')
+    const [events, setEvents] = useState([])
 
     const router = useRouter()
 
@@ -48,44 +50,32 @@ const myEvents = () => {
       )
 
     useEffect(() => {
-       userProfileData()
+    //    userProfileData();
     //    switchProfile()
+    getEvents()
     }, []);
 
-    const  userProfileData = async () =>  {
-       const profile_loggedIn = localStorage.getItem('profile_loggedIn');
-        var Token = ''
-        if(profile_loggedIn) {
-            Token = localStorage.getItem('profile_access_Token')
-        } else {
-             Token = localStorage.getItem('access_Token')
-        }
-
-        console.log("[+] ACCESS TOKEN", Token)
-
-        await axios.request({
+    const getEvents = () => {
+        let config = {
             method: 'get',
-            url: profileData,
-            headers:{
-                'Content-Type' : 'application/json',
-                'Authorization' : 'Bearer '+Token
-            },
-            // data:{
-            //     id: 1,
-            //     type: 
-            // }
-        })
-        .then((response) => {
-            console.log("User Data",response.data.data)
-            setemail(response.data.data.email)
-            setphoneNumber(response.data.data.phone)
-
-        })
-        .catch((error) => {
-            console.log(error)
-        })
+            maxBodyLength: Infinity,
+            url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/events/all',
+            headers: { 
+              'Accept': 'application/json', 
+              'Content-Type': 'application/json'
+            }
+          };
+          
+          axios.request(config)
+          .then((response) => {
+            console.log(response.data.data);
+            // setEvents(response.data)
+          })
+          .catch((error) => {
+            console.log(error);
+          })
     }
-
+    
 
 
     return (
@@ -94,60 +84,18 @@ const myEvents = () => {
             <SecondaryHeader />
 
 
-            <div className="Home">
-                <div className="top-left-Profile">
+            <div className="Home"style={{height: '100vh'}}>
+                <div style={{paddingTop: 100}}className="top-left-Profile">
                 <button onClick={() => {router.push('/createEvent')}} className="justAbutton" style={{zIndex: 1000000, marginTop: 90}}> <span style={{marginLeft: 18}}>Create Event</span> </button>
                     {/* <img className="userImage" src={image1.src} /> */}
                     <eventsHeader />
-                <Table.Root style={{zindex: -1, marginTop: "15%", width: 1100, marginLeft: 20}}>
-                    <Table.Header>
-                        <Table.Row>
-                        <Table.ColumnHeaderCell><a>#</a></Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell><a>Preview</a></Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell><a>Name</a></Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell><a>Date</a></Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell style={{background:"#2e3136", color:"#999999", fontSize: 11}}><a>Venue</a></Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell><a>Sold</a></Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell><a>Available</a></Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell><a>Status</a></Table.ColumnHeaderCell>
-                        <Table.ColumnHeaderCell><a>Actions</a></Table.ColumnHeaderCell>
-
-                        </Table.Row>
-                    </Table.Header>
-
-                    <Table.Body>
-                        <Table.Row>
-                        <Table.RowHeaderCell>1</Table.RowHeaderCell>
-                        <Table.Cell>SHOW IMAGE</Table.Cell>
-                        <Table.Cell>Chris Kareh</Table.Cell>
-                        <Table.Cell>19/09/2000</Table.Cell>
-                        <Table.Cell style={{background:"#25282d"}}>3ammo Plaza</Table.Cell>
-                        <Table.Cell>26</Table.Cell>
-                        <Table.Cell>12</Table.Cell>
-                        <Table.Cell>Published</Table.Cell>
-                        <Table.Cell>Edit</Table.Cell> 
-                        </Table.Row>
-{/* 
-                        <Table.Row>
-                        <Table.RowHeaderCell>Zahra Ambessa</Table.RowHeaderCell>
-                        <Table.Cell>zahra@example.com</Table.Cell>
-                        <Table.Cell>Admin</Table.Cell>
-                        </Table.Row>
-
-                        <Table.Row>
-                        <Table.RowHeaderCell>Jasper Eriksson</Table.RowHeaderCell>
-                        <Table.Cell>jasper@example.com</Table.Cell>
-                        <Table.Cell>Developer</Table.Cell>
-                        </Table.Row> */}
-                    </Table.Body>
-                </Table.Root>
-                    
-
+                    <EventTable events={events} />
+    
                 </div>
 
 
 
-                <div className="top-right-profile" style={{flexDirection:"column"}}>
+                {/* <div className="top-right-profile" style={{flexDirection:"column"}}>
                     <div className="emblaV" style={{marginTop:40, width: "100%"}}>
                         <div className="embla__viewportV" ref={emblaMainRef}>
                             <div className="embla__containerV">
@@ -182,7 +130,7 @@ const myEvents = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
 
             </div>
 

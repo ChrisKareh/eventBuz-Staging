@@ -13,7 +13,7 @@ const Scheduler = () => {
   const scheduleAPI = () => {
     const axios = require('axios');
     const createEvent_ID = localStorage.getItem('createEvent_ID')
-    console.log("Event ID in schedule")
+    console.log("Event ID in schedule", data)
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
