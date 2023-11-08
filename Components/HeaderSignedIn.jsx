@@ -1,26 +1,110 @@
 import Image from "next/image"
 import mainLogo from '../assets/mainLogo.png'
 import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
+import axios from "axios"
+import { profileData } from "@/pages/api/auth/URL"
+import { Store } from "@/Redux/store"
+import { setPlaceName } from "@/Redux/slice"
+import { useSelector } from "react-redux"
 
 const HeaderSignedIn = () => {
     const router = useRouter()
+    const [username, setUsername] = useState('')
+    const [email, setemail] = useState('')
+    const [Token, setToken] = useState('')
+    const [waddup, setwaddup] = useState(false)
+    const [waddupData, setwaddupData] = useState('')
+    const [switched, setswitched] = useState(false)
+
+    const isSwitch = useSelector(state => state.data.isSwitch);
+    // const notUsername = useSelector(state => state.data.notusername)
+    // const username = useSelector(state => state.data.placeName)
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    useEffect(async () => {
+        if(typeof window !== 'undefined'){
+            const storedSwitched = window.localStorage.getItem('switched')
+            const notUsername = window.localStorage.getItem('notUsername')
+
+            if (storedSwitched) {
+                console.log("local storage exist", storedSwitched)
+                setwaddup(storedSwitched)
+            }
+
+            if(notUsername){
+                setwaddupData(notUsername)
+            }
+            console.log("local storage empty", storedSwitched)
+        }
+        
+        
 
 
+        getUserName()
+    }, []);
+
+    const getUserName = async () => {
+        
+        // const profile_loggedIn = localStorage.getItem('profile_loggedIn');
+       
+        // console.log("PROFILE LOGGED IN",profile_loggedIn)
+        
+        // if(profile_loggedIn) {
+        //     const tempToken = localStorage.getItem('profile_access')
+        //     console.log(tempToken, "TEMP TOKEN")
+        //     setToken(tempToken)
+        //     console.log("Debugging Token in HeaderSignIn line 31", Token)
+        // }
+    
+        // else {
+        //    const  tempToken = localStorage.getItem('access_Token')
+        //    setToken(tempToken)
+        //    console.log("Debugging Main access Token in line 39 Switch function", Token)
+        // }
+
+
+        // const Token = localStorage.getItem('access_Token')
+        // console.log("[+] ACCESS TOKEN",Token)
+        const Token = localStorage.getItem('access_Token')
+
+        await axios.request({
+            method: 'get',
+            url: profileData,
+            headers:{
+                'Content-Type' : 'application/json',
+                'Authorization' : 'Bearer '+Token
+            },
+        })
+        .then((response) => {
+            console.log(response.data.data)
+            setUsername(response.data.data.name)
+            // Store.dispatch(setPlaceName(response.data.data.name))
+            
+        })
+        .catch((error) => {
+            
+            console.log("Getting username error:",error)
+        })
+    }
+    
     return (
         <>
 
-        <div classname="mainHeaderContainer">
+        <div style={{backgroundColor: "#000", zIndex: 100}} >
 
             {/* Company Image */}
             <div className="mainLogo">
-                <Image width={179} height={48} src={mainLogo} />
+                <Image width={179} height={48} src={mainLogo} alt={"Waddup"}/>
             </div>
 
             {/* Navigation Bar */}
             <section className="et-hero-tabs">
 
                 <div className="et-hero-tabs-container">
-                    <a className="et-hero-tab" href="#tab-es6">
+                    <a className="et-hero-tab" onClick={() => {router.push('./Events')}}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
                             <path d="M10.0554 1.73522C10.3107 1.49386 10.6487 1.35937 11 1.35938C11.3513 1.35937 11.6893 1.49386 11.9446 1.73522L18.6051 8.03135C19.0176 8.42047 19.25 8.9636 19.25 9.5301V17.1889C19.25 17.7359 19.0327 18.2605 18.6459 18.6473C18.2591 19.034 17.7345 19.2514 17.1875 19.2514H14.4375C14.1665 19.2514 13.8982 19.198 13.6479 19.0942C13.3976 18.9905 13.1701 18.8384 12.9786 18.6468C12.7871 18.4551 12.6352 18.2276 12.5316 17.9772C12.428 17.7268 12.3748 17.4584 12.375 17.1875V13.75C12.375 13.5676 12.3026 13.3928 12.1736 13.2638C12.0447 13.1349 11.8698 13.0625 11.6875 13.0625H10.3125C10.1302 13.0625 9.9553 13.1349 9.82636 13.2638C9.69743 13.3928 9.625 13.5676 9.625 13.75V17.1875C9.625 17.7345 9.4077 18.2591 9.02091 18.6459C8.63411 19.0327 8.10951 19.25 7.5625 19.25H4.8125C4.26549 19.25 3.74089 19.0327 3.35409 18.6459C2.9673 18.2591 2.75 17.7345 2.75 17.1875V9.52872C2.75 8.96222 2.98375 8.4191 3.39625 8.02997L10.0554 1.73247V1.73522ZM11 2.73347L4.3395 9.03097C4.27188 9.09507 4.218 9.17225 4.18113 9.25782C4.14426 9.34338 4.12516 9.43555 4.125 9.52872V17.1875C4.125 17.3698 4.19743 17.5447 4.32636 17.6736C4.4553 17.8025 4.63016 17.875 4.8125 17.875H7.5625C7.74484 17.875 7.9197 17.8025 8.04864 17.6736C8.17757 17.5447 8.25 17.3698 8.25 17.1875V13.75C8.25 13.203 8.4673 12.6784 8.85409 12.2916C9.24089 11.9048 9.76549 11.6875 10.3125 11.6875H11.6875C12.2345 11.6875 12.7591 11.9048 13.1459 12.2916C13.5327 12.6784 13.75 13.203 13.75 13.75V17.1875C13.75 17.3698 13.8224 17.5447 13.9514 17.6736C14.0803 17.8025 14.2552 17.875 14.4375 17.875H17.1875C17.3698 17.875 17.5447 17.8025 17.6736 17.6736C17.8026 17.5447 17.875 17.3698 17.875 17.1875V9.52872C17.875 9.43532 17.856 9.34289 17.8191 9.25707C17.7823 9.17126 17.7283 9.09386 17.6605 9.0296L11 2.73347Z" />
                         </svg>HOME</a>
@@ -96,7 +180,13 @@ const HeaderSignedIn = () => {
                             </g>
                         </svg>
 
-                        <a>User</a>
+                        {waddup == true ? (
+                            <a className="usernameTitle">{capitalizeFirstLetter(waddupData)}</a>
+
+                        ): (
+
+                        <a className="usernameTitle">{capitalizeFirstLetter(username)}</a>
+                        )}
 
                     </button>
 

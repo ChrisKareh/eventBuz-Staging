@@ -1,11 +1,30 @@
 import HeaderSignedIn from "@/Components/HeaderSignedIn";
 import image1 from '../public/image1.jpg'
-import {useEffect, useState} from "react";
-import HorizontalCaroussel from "@/Components/HorizontalCaroussel";
+import {useEffect, useState,useRef} from "react";
 import imageByIndex from '../functions/imageByIndex'
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import {Thumb} from "@/Components/VerticalThumbSlider";
+import EmblaCarousel from "../Components/EmblaCarousel";
+import { useCallback } from "react";
+import axios from "axios";
+import { profileData, switchProfileURL } from "./api/auth/URL";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
+import SecondaryHeader from "@/Components/SecondaryHeader";
+import ThirdHeader from "@/Components/ThirdHeader";
+import ContactInfo from "@/Components/userData";
+import Image from "next/image";
+import { Button, DropdownMenu, Theme } from "@radix-ui/themes"
+import { useSelector } from "react-redux"
+import { Router, useRouter } from "next/router"
+import { getPlacesURL } from "@/pages/api/auth/URL"
+
+
+
+
+
+
 
 const userProfile = () => {
     const OPTIONS = {axis: 'y'}
@@ -23,85 +42,369 @@ const userProfile = () => {
         dragFree: true
     })
 
+    const [loading, setLoading] = useState(true)
+
+    const [email, setemail] = useState('')
+    const [phoneNumber, setphoneNumber] = useState('')
+    const [location, setLocation] = useState('')
+    const [website, setWebsite] = useState('')
+    const [username, setUsername] = useState('')
+    const [type, setType] = useState('')
+    const [profilePicture, setProfilePicture] = useState('')
 
 
+    const [places, setPlaces] = useState([])
+    const [suppliers, setSuppliers] = useState([])
+    const [stateType, setstateType] = useState('');
+    const [pressed, setPressed] = useState(false);
+    const [switchName, setSwitchName] = useState('');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    // const [isSwitchUser, setisSwitchUser] = useState(false);
+    const [Token, setToken] = useState('')
+
+    let dropdownRef = useRef(null);
+
+    const isSwitch = useSelector(state => state.data.isSwitch)
+
+    const router = useRouter()
+
+    const onThumbClick = useCallback(
+        (index) => {
+          if (!emblaMainApi || !emblaThumbsApi) return
+          emblaMainApi.scrollTo(index)
+        },
+        [emblaMainApi, emblaThumbsApi]
+      )
 
     useEffect(() => {
-        console.log(image1.src)
+       userProfileData()
+       getUserPlaces()
+       getUserSuppliers()
+    //    switchProfile()
     }, []);
+    useEffect(() => {
+        if (isDropdownOpen) {
+            document.body.style.overflow = 'hidden';
+          } else {
+            document.body.style.overflow = '';
+          }
+        
+          // Cleanup function to reset overflow when component unmounts.
+          return () => {
+            document.body.style.overflow = '';
+          };
+    },[isDropdownOpen])
+
+    const switchProfile =  (id, type) => {
+        
+        console.log("OI IM TRYING TO SWITCH PROFILE")
+        const profile_loggedIn = localStorage.getItem('Profile_LoggedIn')
+        
+        if(profile_loggedIn) {
+            const tempToken = localStorage.getItem('profile_access')
+            console.log(tempToken, "TEMP TOKEN")
+            setToken(tempToken)
+            console.log("Debugging Token in HeaderSignIn line 31", Token)
+        }
+    
+        else {
+           const  tempToken = localStorage.getItem('access_Token')
+           setToken(tempToken)
+           console.log("Debugging Main access Token in line 39 Switch function", tempToken)
+        }
+
+
+
+        const axios = require('axios');
+        const FormData = require('form-data');
+        let data = new FormData();
+        data.append('id', id);
+        data.append('type', type);
+
+        let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/switch-profile',
+        headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': 'Bearer '+'34|DHhs9SLHBZBi5xElsQlHTCN76Gh1GtR3r9mcHsXA78f0ceba', 
+            
+        },
+        data : data
+        };
+
+        axios.request(config)
+        .then((response) => {
+             if(type == "main") { 
+                localStorage.setItem('access_token', response.data.access_token)
+                localStorage.setItem('profile_loggedIn', false)
+                console.log("Switched To user")
+             } else {
+                localStorage.setItem('profile_loggedIn', true)
+                localStorage.setItem('profile_access_token',response.data.access_token)
+                console.log("Switched to Place/Supplier")
+                toast.success("Switch Success ")
+                
+             }
+             console.log("Response of switching",response.data)
+             
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
+    }
+
+    const getUserPlaces = async () => {
+
+        const Token = localStorage.getItem('access_Token')
+        console.log("TOKEN GET USER PLACES", Token)
+        
+        await axios.request({
+            method: 'get',
+            url: getPlacesURL,
+            headers:{
+                'Content-Type' : 'application/json',
+                'Authorization' : 'Bearer '+ Token,
+            },
+        })
+        .then((response) => {
+            console.log(response)
+            // const extractedNames = response.data.data.map(item => item.name);
+            // setPlaces(extractedNames)
+            setPlaces(response.data.data)
+            console.log("Place",response.data.data)
+            // console.log("PLaces names", extractedNames)
+            
+        })
+        .catch((error) => {
+            console.log(error)
+        })
+    }
+
+    const getUserSuppliers = async () => {
+        const axios = require('axios');
+        const Token = localStorage.getItem('access_Token')
+
+        let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/get-user-suppliers',
+        headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': 'Bearer '+ Token
+        }
+        };
+
+        axios.request(config)
+        .then((response) => {
+        console.log(JSON.stringify(response.data));
+        setSuppliers(response.data.data)
+        })
+        .catch((error) => {
+        console.log(error);
+        });
+
+    }
+
+    const  userProfileData = async () =>  {
+        console.log("[+] Getting User Data ")
+       const Token = localStorage.getItem('access_Token')
+        console.log("[+] ACCESS TOKEN", Token)
+
+        await axios.request({
+            method: 'get',
+            url: profileData,
+            headers:{
+                'Content-Type' : 'application/json',
+                'Authorization' : 'Bearer '+Token
+            },
+            
+        })
+        .then((response) => {
+            console.log("User Data",response.data.data)
+            setemail(response.data.data.email)
+            setphoneNumber(response.data.data.phone)
+            setLocation(response.data.data.country)
+            setWebsite(response.data.data.website)
+            setUsername(response.data.data.name)
+            setType(response.data.data.types[0].name)
+            if (response.data.data.profile_image && response.data.data.profile_image.url) {
+                setProfilePicture(response.data.data.profile_image.url)
+            }
+            console.log("{+++++} TYPE:", response.data.data.types[0])
+            console.log("{+++++++++++++PROFILE PICTURE}",response.data.data.profile_image.url)
+            setLoading(false)
+            
+        })
+        .catch((error) => {
+            console.log(error)
+            setLoading(false)
+        })
+    }
+
+ 
 
     return (
-    <>
-        <HeaderSignedIn />
-        <div className="secondary-et-hero-tabs-container">
+        <>
+        
+  
 
-            <a className="secondary-et-hero-tab" href="#tab-es6">My Panel</a>
-            <a className="secondary-et-hero-tab" href="#tab-flexbox">My Profile</a>
-            <a className="secondary-et-hero-tab" href="#tab-react">My Contacts</a>
-            <a className="secondary-et-hero-tab" href="#tab-angular">My Notifications</a>
-            <a className="secondary-et-hero-tab" href="#tab-other">My Invitations</a>
-            <a className="secondary-et-hero-tab" href="#tab-other"> My Events</a>
-            <a className="secondary-et-hero-tab" href="#tab-other"> LogOut</a>
+            <div style={{backgroundColor: "#25282d", top: 0}}>
+                <HeaderSignedIn />
+                <SecondaryHeader />
 
-        </div>
+                <div style={{display : "flex", flexDirection: 'row', paddingTop: 50}}>
 
+                    <button className="justAbutton" style={{zIndex: 1000000}}> <span>Profile</span> </button>
 
+                    <DropdownMenu.Root>
+                        <DropdownMenu.Trigger>
+                            <button className="justAbutton" style={{zIndex: 1000000, marginLeft: 250, backgroundColor: "#000"}}> <span style={{marginLeft: 33}}>Suppliers</span> </button>
+                        </DropdownMenu.Trigger>
 
+                        {Array.isArray(suppliers) && suppliers.length > 0 ? (
+                            <DropdownMenu.Content>
+                            {suppliers.map(suppliers => (
+                                <DropdownMenu.Item onClick={() => {
+                                    switchProfile(suppliers.id, "supplier")
+                                    setstateType("supplier")
+                                    setPressed(true)
+                                    setSwitchName(suppliers)
+                                    Store.dispatch(setIsSwitch(true))
+                                    localStorage.setItem('switched', true)
+                                    localStorage.setItem('notUsername', suppliers.name)
+                                    // Store.dispatch(setNotUsername(suppliers.name))
+                                    console.log(suppliers.name)
+                                }} key={suppliers.id}>
+                                    {suppliers.name}
+                                </DropdownMenu.Item>
+                            ))}
+                            </DropdownMenu.Content>
+                            ) : (
+                                <DropdownMenu.Content style={{maxHeight: "80vh", overflowY: "auto" }}>
+                                
+                                    <DropdownMenu.Item >
+                                        No Suppliers
+                                    </DropdownMenu.Item>
+                            </DropdownMenu.Content>
+                        )}
+                    </DropdownMenu.Root>
+                    
+                    <DropdownMenu.Root>
+                        <DropdownMenu.Trigger>
+                            <button className="justAbutton" style={{zIndex: 1000000, marginLeft: 450, backgroundColor: "#000"}}> <span style={{marginLeft: 40}}>Places</span> </button>
+                        </DropdownMenu.Trigger>
 
-            <div className="Home">
-                <div className="top-left">
-                    <div className="third-et-hero-tabs-container">
+                        {Array.isArray(places) && places.length > 0 ? (
+                            <DropdownMenu.Content>
+                                {places.map(place => (
+                                    <DropdownMenu.Item onClick={() => {
+                                        setstateType("place")
+                                        setPressed(true)
+                                        setSwitchName(place)
+                                        Store.dispatch(setIsSwitch(true))
+                                        localStorage.setItem('switched', true)
+                                        localStorage.setItem('notUsername', place.name)
+                                        // Store.dispatch(setNotUsername(places.name))
+                                        // setTimeout(() => {
+                                        //     switchProfile(place.id, "place")
+                                        // }, 500);
+                                    }} key={place.id}>
+                                        {place.name}
+                                    </DropdownMenu.Item>
+                                ))}
+                            </DropdownMenu.Content>
+                            ):(
+                                <DropdownMenu.Content>
+                                    <DropdownMenu.Item>
+                                        No Places
+                                    </DropdownMenu.Item>
+                                </DropdownMenu.Content>
+                        )}
+                    </DropdownMenu.Root>
+                    
 
-                        <a className="third-et-hero-tab" href="#tab-es6">My Profile</a>
-                        <a className="third-et-hero-tab" href="#tab-flexbox">My Supplier</a>
-                        <a className="third-et-hero-tab" href="#tab-react">My Places</a>
-
-                        <a className="third-et-hero-tab-edit"> Edit Profile </a>
-
-                    </div>
-                    <img className="userImage" src={image1.src} />
                 </div>
+                                
+                            
+                
+                    <div className="imageProfile" style={{marginLeft: 50}}>
+                        {loading ? (
+                            <div style={{width: 954, height: 432, backgroundColor: "#FFF", marginTop: 130, paddingTop: 130}}>
+                                <div class="Imageloader"></div>
+                            </div>
+                        ) : (
+                            
+                            <Image
+                                src={profilePicture} 
+                                alt="Car Image"
+                                style={{paddingTop: 130}}
+                                width={954} 
+                                height={432} 
+                                
+                            />
+                        )}
 
+                        <div className="imageProfileDescription">
+                            <div className="textAndIconsContainer">
+                            {loading ? (
+                                <>
+                                <div className="card__skeleton card__title"></div>
+                                <div className="card__skeleton card__title"></div>
+                                </>
+                            ) : (
+                                <>
+                                <h1>{username}</h1>
+                                <p style={{color: "#FFF"}}>{type}</p>
+                                </>
+                            )}
 
+                            <div className="socialIcons">
+                                
+                                <i className="fab fa-twitter"></i>
+                                <i className="fab fa-facebook-f"></i>
+                                <i className="fab fa-google"></i>
+                                <i className="fab fa-pinterest-p"></i>
+                                <i className="fab fa-linkedin-in"></i>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
 
-                <div className="top-right" style={{flexDirection:"column"}}>
-                    <div className="emblaV" style={{marginTop:40, width: "100%"}}>
-                        <div className="embla__viewportV" ref={emblaMainRef}>
-                            <div className="embla__containerV">
-                                {SLIDES.map((index) => (
-                                    <div className="embla__slideV" key={index}>
-                                        <div className="embla__slide__numberV">
-                                            <span>{index + 1}</span>
-                                        </div>
-                                        <img
-                                            className="embla__slide__imgV"
-                                            src={imageByIndex(index)}
-                                            alt="Your alt text"
-                                        />
+                        <div className="row">          
+                            <ContactInfo
+                                loading={loading}
+                                
+                                data={[
+                                    { icon: <i className="fas fa-map-marker-alt"></i>, value: location },
+                                    { icon: <i className="fas fa-phone"></i>, value: phoneNumber },
+                                    { icon: <i className="fas fa-envelope"></i>, value: email },
+                                    { icon: <i className="fas fa-globe"></i>, value: website },
+                                    ]}
+                                />     
+
+                            <button className="MessageUS">
+                                <div className="svg-wrapper-1">
+                                    <div className="svg-wrapper">
+                                    <svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z" fill="currentColor"></path>
+                                    </svg>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="embla-thumbs" style={{width:"25%", height:"25%" ,marginLeft: 30}}>
-                        <div className="embla-thumbs__viewport" ref={emblaThumbsRef}>
-                            <div className="embla-thumbs__container">
-                                {SLIDES.map((index) => (
-                                    <Thumb
-                                        onClick={() => onThumbClick(index)}
-                                        selected={index === selectedIndex}
-                                        index={index}
-                                        imgSrc={imageByIndex(index)}
-                                        key={index}
-                                    />
+                                </div>
+                                <span>Message Us</span>
+                            </button>
+                        </div>                        
+                            
+                    
+        
+                           
 
-                                ))}
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
-            </div>
+            
 
 
 
@@ -111,8 +414,8 @@ const userProfile = () => {
 
 
 
-
-    </>
+</>
+   
     )
 }
 export default userProfile

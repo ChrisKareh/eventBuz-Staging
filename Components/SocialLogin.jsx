@@ -26,7 +26,7 @@ const SocialLogin = () => {
 
     
         return (
-        <div className="container">
+        <div>
             {/* Google Button */}
             <div>
             <button className="signbutton" onClick={() => handleGoogleSignIn()}>

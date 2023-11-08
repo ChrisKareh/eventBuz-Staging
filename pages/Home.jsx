@@ -58,10 +58,7 @@ const Home = () => {
         
       }, [emblaMainApi, onSelect])
 
-      useEffect(() => {
-        Store.dispatch(setusername("Wassup"))
-        registerEmail(username);
-      },[])
+        
 
    
         const imageMapping = {
@@ -72,8 +69,8 @@ const Home = () => {
         const renderEventContent = (eventInfo) => {
             return (
               <>
-                <img src={eventInfo.event.extendedProps.image} alt={eventInfo.event.title} style={{width: 140, height: 113, position: "absolute", zIndex: 0}}  />
-                <span>{eventInfo.event.title}</span>
+                <img src={eventInfo.event.extendedProps.image} alt={eventInfo.event.title} style={{width: 150, height: 90, position: "absolute", zIndex: 0, left: 0, top: 0}}  />
+                <span className="fc-daygrid-day-number">{eventInfo.event.title}</span>
               </>
             );
           };
@@ -85,7 +82,7 @@ const Home = () => {
     return(
         <>
             <Header/>
-            <div className="Home"> 
+            <div className="Home" style={{paddingTop: 90}}> 
                 <div className="top-left">
                     <HorizontalCaroussel slides={SLIDES} options={{}} />
                 </div>

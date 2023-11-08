@@ -1,14 +1,17 @@
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Select from 'react-select'
 import countryList from 'react-select-country-list'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import registrationProgress from '@/Components/registrationProgress'
-import { checkEmail } from './api/auth/APICalls'
+import { checkEmail, organizationTypeList } from './api/auth/APICalls'
 import { registerEmail } from './api/auth/APICalls'
 import {useRouter} from "next/router";
+import { useSelector } from 'react-redux'
+import "../styles/RegistrationOrganizer.module.css"
+import styled from 'styled-components'
 
 
 
@@ -29,17 +32,27 @@ const RegistrationOrganizer = () => {
     const [role, setRole] = useState('')
     const [signinType, setSignInType] = useState('')
     const options = useMemo(() => countryList().getData(), [])
+    const [organizationName, setorganizationName] = useState('')
+    const [organizationType, setOrganizationType] = useState([])
 
 
     const router = useRouter()
 
+   //Redux
+   const organizationList = useSelector(state => state.data.organizationList)
+    
 
+    useEffect(() => {
+        organizationTypeList()
+        
+    },[])
 
     const changeHandler = value => {
-        console.log(value.label)
-        setCountry(value.label)
-        console.log(country)
+        console.log("Selected value of organization type",value)
+        setOrganizationType(value)
     }
+
+    
 
     const handleEmailConfirmation= () => {
         if(email != confEmail){
@@ -71,6 +84,8 @@ const RegistrationOrganizer = () => {
             height: "40px",
             transition: ".4s",
             marginLeft: "10px",
+            
+   
         }),
         valueContainer: (provided, state) => ({
             ...provided,
@@ -122,7 +137,36 @@ const RegistrationOrganizer = () => {
         singleValue: (provided, state) => {
             return { ...provided, color: 'white' };  // Replace 'green' with your desired color
         },
+        
+
     };
+
+    const StyledSelectWrapper = styled.div`
+  .css-1p3m7a8-multiValue {
+    background-color: #B62872;
+    color: #FFF;
+    border-radius: 120px !important;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+  }
+  .css-wsp0cs-MultiValueGeneric {
+    margin: 0; 
+    padding-left: 5; 
+    font-size: 12px;
+  }
+  .css-tj5bde-Svg {
+    margin-bottom: 10px;
+  }
+  .css-12a83d4-MultiValueRemove:hover {
+    background-color: rgba(0,0,0,0);
+    color: #FFF;
+}
+
+`;
+
+    console.log("organizationREDUX", organizationList)
 
     return (
         <>
@@ -145,11 +189,13 @@ const RegistrationOrganizer = () => {
                 <div className="SignupField">
                     <div className="Input">
                         <a>Organization Name</a>
-                        <input type="text" name="text" className="input" onChange={e => {setName(e.currentTarget.value)}}></input>
+                        <input type="text" name="text" className="input" onChange={e => {setorganizationName(e.currentTarget.value)}}></input>
                     </div>
                     <div className="Input">
                         <a>Organization Type</a>
-                        <input type="text" name="text" className="input" onChange={e => {setlastName(e.currentTarget.value)}}></input>
+                        <StyledSelectWrapper>
+                            <Select isMulti styles={customStyles} options={organizationList} value={organizationType} onChange={changeHandler}/>
+                        </StyledSelectWrapper>
                     </div>
                 </div>
                 <div className="SignupField">
@@ -165,7 +211,7 @@ const RegistrationOrganizer = () => {
                 <div className="SignupField">
                     <div>
                         <a>Country Picker</a>
-                        <Select styles={customStyles} options={options} value={country} onChange={changeHandler}/>
+                        <Select isMulti styles={customStyles} options={options} value={country} onChange={changeHandler}/>
                     </div>
                     <div className="Input">
                         <a>Phone Number</a>
@@ -197,21 +243,12 @@ const RegistrationOrganizer = () => {
                         <input type="text" name="text" className="input" onChange={e => {setNationality(e.currentTarget.value)}}></input>
                     </div>
                     <button className="loginButton" style={{marginTop: 35, marginLeft:280, height: 40, marginRight: 20}} onClick={ () => {
-                        console.log("I got pressed")
-                        if(handleEmailConfirmation){
-                            console.log("Got passed email confirmation")
-                            // if(checkEmail(email) ==  true){
-                            console.log("email check existence")
-                            setRole('customer')
-                            setSignInType('email')
-                            if(registerEmail(name, lastName, email, gender, phoneNumber, country, nationality, dob, role, signinType)) {
-                                router.push('/userProfile');
-                            } else {
-                                console.log("Account not signed up")
+                        registerEmail(name, lastName, email, gender, phoneNumber, country, nationality, dob, role, signinType)
+                        setTimeout(()=> {
+                            if(statusMessage == 200) {
+                                router.push("/Verify") 
                             }
-
-                            // }
-                        }
+                        },1000)
                     }}>
                         Continue
                     </button>
