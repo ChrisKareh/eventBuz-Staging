@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{}";
+self.__REACT_LOADABLE_MANIFEST='{"../Components/ckEditor.jsx -> @ckeditor/ckeditor5-build-classic":{"id":5234,"files":["static/chunks/effa34c9.3533bf4aeb30ca60.js"]},"../Components/ckEditor.jsx -> @ckeditor/ckeditor5-react":{"id":3813,"files":["static/chunks/813.e7f776fbf7a221e9.js"]},"../Components/oldEventCalendar.jsx -> dhtmlx-scheduler":{"id":8831,"files":["static/chunks/1fee39cc.d42954a05fea533d.js"]}}';

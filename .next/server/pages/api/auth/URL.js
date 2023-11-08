@@ -68,11 +68,29 @@ const routeModule = new PagesAPIRouteModule({
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   checkEmailURL: () => (/* binding */ checkEmailURL),
-/* harmony export */   registrationByEmail: () => (/* binding */ registrationByEmail)
+/* harmony export */   getPlacesURL: () => (/* binding */ getPlacesURL),
+/* harmony export */   getSuppliersURL: () => (/* binding */ getSuppliersURL),
+/* harmony export */   organizationTypeListURL: () => (/* binding */ organizationTypeListURL),
+/* harmony export */   profileData: () => (/* binding */ profileData),
+/* harmony export */   registrationByEmail: () => (/* binding */ registrationByEmail),
+/* harmony export */   resendVerificationCodeURL: () => (/* binding */ resendVerificationCodeURL),
+/* harmony export */   sendSMS: () => (/* binding */ sendSMS),
+/* harmony export */   subscriptionsURL: () => (/* binding */ subscriptionsURL),
+/* harmony export */   switchProfileURL: () => (/* binding */ switchProfileURL),
+/* harmony export */   verifyEmailURL: () => (/* binding */ verifyEmailURL)
 /* harmony export */ });
 const App_URL = `https://jonathana74.sg-host.com/event-buz-backend-main/api/v1`;
 const registrationByEmail = `${App_URL}/register`;
 const checkEmailURL = `${App_URL}/check-email`;
+const resendVerificationCodeURL = `${App_URL}/resend-email-verification-code`;
+const verifyEmailURL = `${App_URL}/verify-email`;
+const sendSMS = `${App_URL}/send-sms`;
+const organizationTypeListURL = `${App_URL}/organiser/type`;
+const subscriptionsURL = `${App_URL}/packages/all`;
+const profileData = `${App_URL}/show-profile`;
+const switchProfileURL = `${App_URL}/switch-profile`;
+const getPlacesURL = `${App_URL}/get-user-places`;
+const getSuppliersURL = `${App_URL}/get-user-suppliers`;
 
 
 
