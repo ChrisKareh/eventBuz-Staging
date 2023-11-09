@@ -62,6 +62,7 @@ export default function CreateEvent() {
   const [phoneData, setPhoneData] = useState([])
   const [websiteData, setWebsiteData] = useState([{ type: 'website', value: '' }]);
   const [termsConditions, setTermsConditions] = useState('')  
+  const [keywords, setKeywords] = useState([])
 
 
   const options = useMemo(() => countryList().getData(), [])
@@ -165,6 +166,34 @@ const countryListapi = () => {
   });
 }
 
+const getKeywords = () => {
+  const axios = require('axios');
+
+let config = {
+  method: 'get',
+  maxBodyLength: Infinity,
+  url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/keyword/all',
+  headers: { 
+    'Accept': 'application/json', 
+    'Content-Type': 'application/json'
+  }
+};
+
+axios.request(config)
+.then((response) => {
+  console.log(JSON.stringify(response.data.data));
+  
+  const namekey = response.data.data.map(item => ({
+    value: item.id,
+    label:item.name
+  }));
+  setKeywords(namekey)
+})
+.catch((error) => {
+  console.log(error);
+});
+}
+
   const handleSponsorInputChange = (id, field, value) => {
     setElements(prevElements => prevElements.map(element =>
         element.id === id
@@ -208,6 +237,7 @@ const selectStyles = {
     getListofCurrencies()
     countryListapi()
     console.log("List of currencies Redux", listOfCurrencies)
+    getKeywords()
 
   },[])
 
@@ -813,7 +843,7 @@ const createEventVenue = async(inputValue) => {
                   {title == "keyword" ? (
                     <CreatableSelect 
                     key={`${selectedCategory}-${title}`} 
-                    isMulti options={listTypes}  
+                    isMulti options={keywords}  
                     onChange={(selectedOptions) => {
                       const syntheticEvent = {
                           target: {
