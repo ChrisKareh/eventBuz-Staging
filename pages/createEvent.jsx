@@ -63,6 +63,7 @@ export default function CreateEvent() {
   const [websiteData, setWebsiteData] = useState([{ type: 'website', value: '' }]);
   const [termsConditions, setTermsConditions] = useState('')  
   const [keywords, setKeywords] = useState([])
+  const [currency, setCurrency] = useState('')
 
 
   const options = useMemo(() => countryList().getData(), [])
@@ -307,6 +308,8 @@ const selectStyles = {
     })
     .catch((error) => {
         console.log(error)
+        toast.error("Error Occured, please try again")
+        setSelectedCategory("Options")
     })
 }
     const createAdditionalFields = () => {
@@ -360,16 +363,18 @@ const selectStyles = {
         break;
       case "Contact Person":
         createEventContact(inputValues, () => {
-          setSelectedCategory("Venue Location")
+          setSelectedCategory("Contact Person")
         })
         break;
       case "Social Media":
         createEventSocial(inputValues, () => {
-          setSelectedCategory("Event Schedule")
+          setSelectedCategory("Social Media")
         })
         break;
       case "Options":
-        createEventOptions(inputValues)
+        createEventOptions(inputValues,() => {
+          setSelectedCategory('Options')
+        } )
         break;
       case "Additional Fields":
         createAdditionalFields()
@@ -550,7 +555,7 @@ const createEventVenue = async(inputValue) => {
 }
 
   return (
-  <div className='backgroundCreateEvent'>
+  <div className='backgroundCreateEvent' style={{height: '200vh'}}>
     <div className="container">
       <div className="category-list">
         {Object.keys(categories).map((category) => (
@@ -614,6 +619,9 @@ const createEventVenue = async(inputValue) => {
                 newPhoneInputs.splice(index, 1);
                 setPhoneInputs(newPhoneInputs);
               };
+              const handleCurrencyChange = (selectedOption) => {
+                setCurrency(selectedOption ? selectedOption.value : '');
+              };
               return (
                 <>
                   <div className="calendar-options-container">
@@ -675,8 +683,8 @@ const createEventVenue = async(inputValue) => {
                         <a>Currency</a>
                         <Select 
                           options={listOfCurrencies}
-                          value={listOfCurrencies.find(option => option.value === bookingType)}
-                          onChange={handleBookingTypeChange}
+                          value={listOfCurrencies.find(option => option.value === listOfCurrencies)}
+                          onChange={handleCurrencyChange}
                           styles={selectStyles}
                         />
                         
