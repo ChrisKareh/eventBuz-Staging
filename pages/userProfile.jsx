@@ -19,6 +19,9 @@ import { Button, DropdownMenu, Theme } from "@radix-ui/themes"
 import { useSelector } from "react-redux"
 import { Router, useRouter } from "next/router"
 import { getPlacesURL } from "@/pages/api/auth/URL"
+import { Store } from "@/Redux/store";
+import { setIsSwitch } from "@/Redux/slice";
+import { toast } from "react-toastify";
 
 
 
@@ -128,7 +131,7 @@ const userProfile = () => {
         url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/switch-profile',
         headers: { 
             'Content-Type': 'application/json', 
-            'Authorization': 'Bearer '+'34|DHhs9SLHBZBi5xElsQlHTCN76Gh1GtR3r9mcHsXA78f0ceba', 
+            'Authorization': 'Bearer '+Token, 
             
         },
         data : data
@@ -210,7 +213,11 @@ const userProfile = () => {
 
     const  userProfileData = async () =>  {
         console.log("[+] Getting User Data ")
-       const Token = localStorage.getItem('access_Token')
+        let Token = localStorage.getItem('access_Token')
+        const profile_loggedIn = localStorage.getItem('Profile_LoggedIn')
+        if(profile_loggedIn){
+            Token = localStorage.getItem('profile_access_token')
+        }
         console.log("[+] ACCESS TOKEN", Token)
 
         await axios.request({
@@ -307,10 +314,8 @@ const userProfile = () => {
                                         Store.dispatch(setIsSwitch(true))
                                         localStorage.setItem('switched', true)
                                         localStorage.setItem('notUsername', place.name)
-                                        // Store.dispatch(setNotUsername(places.name))
-                                        // setTimeout(() => {
-                                        //     switchProfile(place.id, "place")
-                                        // }, 500);
+                                        switchProfile(place.id, "place")
+                                        
                                     }} key={place.id}>
                                         {place.name}
                                     </DropdownMenu.Item>

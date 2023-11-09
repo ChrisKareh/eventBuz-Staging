@@ -130,6 +130,7 @@ axios.request(config)
 // }
 
 const checkEmail = async (Email, callback) => {
+    console.log('Check Email exist', Email)
     
     await axios.request({
         method: 'post',
@@ -161,6 +162,7 @@ const checkEmail = async (Email, callback) => {
         }
     })
     .catch((error) => {
+        console.log("current error",error)
         if(error.response){
             console.log("DATA-ERROR:",error.response.data.message)
             console.log("STATUS-ERROR", error.response.status)
