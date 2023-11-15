@@ -22,15 +22,15 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/login": [
+    "/cardDescription": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/login.js"
+      "static/chunks/pages/cardDescription.js"
     ],
-    "/userProfile": [
+    "/createEvent": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/userProfile.js"
+      "static/chunks/pages/createEvent.js"
     ]
   },
   "ampFirstPages": []

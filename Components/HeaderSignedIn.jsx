@@ -10,13 +10,13 @@ import { useSelector } from "react-redux"
 
 const HeaderSignedIn = () => {
     const router = useRouter()
-    const [username, setUsername] = useState('')
+    // const [username, setUsername] = useState('')
     const [email, setemail] = useState('')
     const [Token, setToken] = useState('')
     const [waddup, setwaddup] = useState(false)
     const [waddupData, setwaddupData] = useState('')
     const [switched, setswitched] = useState(false)
-
+    const username = useSelector(state => state.data.username)
     const isSwitch = useSelector(state => state.data.isSwitch);
     // const notUsername = useSelector(state => state.data.notusername)
     // const username = useSelector(state => state.data.placeName)
@@ -180,13 +180,10 @@ const HeaderSignedIn = () => {
                             </g>
                         </svg>
 
-                        {waddup == true ? (
-                            <a className="usernameTitle">{capitalizeFirstLetter(waddupData)}</a>
-
-                        ): (
+               
 
                         <a className="usernameTitle">{capitalizeFirstLetter(username)}</a>
-                        )}
+                        
 
                     </button>
 

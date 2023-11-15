@@ -20,9 +20,9 @@ import { useSelector } from "react-redux"
 import { Router, useRouter } from "next/router"
 import { getPlacesURL } from "@/pages/api/auth/URL"
 import { Store } from "@/Redux/store";
-import { setIsSwitch } from "@/Redux/slice";
+import { setIsSwitch, setusername } from "@/Redux/slice";
 import { toast } from "react-toastify";
-
+import noImage from '../assets/NoImage.png'
 
 
 
@@ -81,12 +81,17 @@ const userProfile = () => {
       )
 
     useEffect(() => {
+        const MainUserToken = localStorage.getItem('access_Token')
+        const notMainToken = localStorage.getItem('profile_access')
+        console.log("Main Token", MainUserToken)
+        console.log("Non Main User Token", notMainToken)
        userProfileData()
        getUserPlaces()
        getUserSuppliers()
     //    switchProfile()
     }, []);
     useEffect(() => {
+        localStorage.setItem('Profile_LoggedIn', false)
         if (isDropdownOpen) {
             document.body.style.overflow = 'hidden';
           } else {
@@ -100,24 +105,8 @@ const userProfile = () => {
     },[isDropdownOpen])
 
     const switchProfile =  (id, type) => {
-        
-        console.log("OI IM TRYING TO SWITCH PROFILE")
-        const profile_loggedIn = localStorage.getItem('Profile_LoggedIn')
-        
-        if(profile_loggedIn) {
-            const tempToken = localStorage.getItem('profile_access')
-            console.log(tempToken, "TEMP TOKEN")
-            setToken(tempToken)
-            console.log("Debugging Token in HeaderSignIn line 31", Token)
-        }
     
-        else {
-           const  tempToken = localStorage.getItem('access_Token')
-           setToken(tempToken)
-           console.log("Debugging Main access Token in line 39 Switch function", tempToken)
-        }
-
-
+        const Token = localStorage.getItem('access_Token')
 
         const axios = require('axios');
         const FormData = require('form-data');
@@ -142,19 +131,21 @@ const userProfile = () => {
              if(type == "main") { 
                 localStorage.setItem('access_token', response.data.access_token)
                 localStorage.setItem('profile_loggedIn', false)
-                console.log("Switched To user")
+                //console.log("Switched To user")
+                userProfileData()
              } else {
                 localStorage.setItem('profile_loggedIn', true)
-                localStorage.setItem('profile_access_token',response.data.access_token)
-                console.log("Switched to Place/Supplier")
+                localStorage.setItem('profile_access_token', response.data.access_token)
+                //console.log("Switched to Place/Supplier")
                 toast.success("Switch Success ")
+                userProfileData()
                 
              }
-             console.log("Response of switching",response.data)
+             //console.log("Response of switching",response.data)
              
         })
         .catch((error) => {
-            console.log(error);
+            //console.log(error);
         });
 
     }
@@ -162,7 +153,7 @@ const userProfile = () => {
     const getUserPlaces = async () => {
 
         const Token = localStorage.getItem('access_Token')
-        console.log("TOKEN GET USER PLACES", Token)
+        //console.log("TOKEN GET USER PLACES", Token)
         
         await axios.request({
             method: 'get',
@@ -173,16 +164,16 @@ const userProfile = () => {
             },
         })
         .then((response) => {
-            console.log(response)
+            //console.log(response)
             // const extractedNames = response.data.data.map(item => item.name);
             // setPlaces(extractedNames)
             setPlaces(response.data.data)
-            console.log("Place",response.data.data)
-            // console.log("PLaces names", extractedNames)
+            //console.log("Place",response.data.data)
+            // //console.log("PLaces names", extractedNames)
             
         })
         .catch((error) => {
-            console.log(error)
+            //console.log(error)
         })
     }
 
@@ -202,24 +193,28 @@ const userProfile = () => {
 
         axios.request(config)
         .then((response) => {
-        console.log(JSON.stringify(response.data));
+        //console.log(JSON.stringify(response.data));
         setSuppliers(response.data.data)
         })
         .catch((error) => {
-        console.log(error);
+        //console.log(error);
         });
 
     }
 
     const  userProfileData = async () =>  {
         console.log("[+] Getting User Data ")
+        
         let Token = localStorage.getItem('access_Token')
         const profile_loggedIn = localStorage.getItem('Profile_LoggedIn')
-        if(profile_loggedIn){
+        console.log("Value profile loggedin",profile_loggedIn)
+        if(profile_loggedIn){ 
             Token = localStorage.getItem('profile_access_token')
+        } else {
+            Token = localStorage.getItem('access_Token')
         }
         console.log("[+] ACCESS TOKEN", Token)
-
+        console.log("CURRENT TOKEN",Token)
         await axios.request({
             method: 'get',
             url: profileData,
@@ -230,26 +225,28 @@ const userProfile = () => {
             
         })
         .then((response) => {
-            console.log("User Data",response.data.data)
+            //console.log("User Data",response.data.data)
             setemail(response.data.data.email)
             setphoneNumber(response.data.data.phone)
             setLocation(response.data.data.country)
             setWebsite(response.data.data.website)
             setUsername(response.data.data.name)
+            Store.dispatch(setusername(response.data.data.name))
             setType(response.data.data.types[0].name)
             if (response.data.data.profile_image && response.data.data.profile_image.url) {
                 setProfilePicture(response.data.data.profile_image.url)
             }
-            console.log("{+++++} TYPE:", response.data.data.types[0])
-            console.log("{+++++++++++++PROFILE PICTURE}",response.data.data.profile_image.url)
+            //console.log("{+++++} TYPE:", response.data.data.types[0])
+            //console.log("{+++++++++++++PROFILE PICTURE}",response.data.data.profile_image.url)
             setLoading(false)
             
         })
         .catch((error) => {
-            console.log(error)
+            //console.log(error)
             setLoading(false)
         })
     }
+
 
  
 
@@ -264,7 +261,10 @@ const userProfile = () => {
 
                 <div style={{display : "flex", flexDirection: 'row', paddingTop: 50}}>
 
-                    <button className="justAbutton" style={{zIndex: 1000000}}> <span>Profile</span> </button>
+                    <button onClick={()=>{
+                        localStorage.setItem('Profile_LoggedIn', false)
+                        router.reload()
+                    }} className="justAbutton" style={{zIndex: 1000000}}> <span>Profile</span> </button>
 
                     <DropdownMenu.Root>
                         <DropdownMenu.Trigger>
@@ -282,8 +282,9 @@ const userProfile = () => {
                                     Store.dispatch(setIsSwitch(true))
                                     localStorage.setItem('switched', true)
                                     localStorage.setItem('notUsername', suppliers.name)
+                                    
                                     // Store.dispatch(setNotUsername(suppliers.name))
-                                    console.log(suppliers.name)
+                                    //console.log(suppliers.name)
                                 }} key={suppliers.id}>
                                     {suppliers.name}
                                 </DropdownMenu.Item>
@@ -338,12 +339,13 @@ const userProfile = () => {
                     <div className="imageProfile" style={{marginLeft: 50}}>
                         {loading ? (
                             <div style={{width: 954, height: 432, backgroundColor: "#FFF", marginTop: 130, paddingTop: 130}}>
-                                <div class="Imageloader"></div>
+                                <div className="Imageloader"></div>
                             </div>
                         ) : (
                             
+                            
                             <Image
-                                src={profilePicture} 
+                                src={profilePicture ? (profilePicture):(noImage)} 
                                 alt="Car Image"
                                 style={{paddingTop: 130}}
                                 width={954} 

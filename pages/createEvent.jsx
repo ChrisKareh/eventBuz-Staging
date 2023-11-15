@@ -16,6 +16,8 @@ import CKeditor from '@/Components/ckEditor';
 import { toast } from 'react-toastify';
 import { images } from '@/next.config';
 import Scheduler from '@/Components/oldEventCalendar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 
 const categories = {
@@ -55,7 +57,7 @@ export default function CreateEvent() {
   const [elements, setElements] = useState([{ id: 0 }]);
   const [loading, setLoading] = useState(true);
   const [selectedCountryId, setSelectedCountryId] = useState(null);
-  const [country, setCountry] = useState('')
+  
   const [numberOfOrders, setnumberOfOrders] = useState(null)
   const [phoneInputs, setPhoneInputs] = useState([]);
   const [aditionalFieldsRadio, setAditionalFieldsRadio] = useState(false)
@@ -229,11 +231,77 @@ const selectStyles = {
   }),
 };
 
+const saveStateToLocalStorage = () => {
+  const stateToSave = { 
+    selectedCategory,
+    showOnMainCalendar,
+    freeEvent,
+    reservations,
+    maxNbReservations,
+    ticketAdditionalFields,
+    bookingType,
+    fields,
+    fieldsStrigified,
+    ticketFields,
+    ticketFieldsStringified,
+    inputValues,
+    listTypes,
+    nameCountry,
+    elements,
+    loading,
+    selectedCountryId,
+    numberOfOrders,
+    phoneInputs,
+    aditionalFieldsRadio,
+    phoneData,
+    websiteData,
+    termsConditions,
+    keywords,
+    currency,    
+    }
+    localStorage.setItem('createEventState', JSON.stringify(stateToSave));
+    console.log('DATA SAVED', stateToSave)
+  }
+
+  useEffect(() => {
+    console.log('WHAT ARE THE INPUT VALUES ?',inputValues)
+  },[inputValues])
 
   
 
   useEffect(() => {
-    
+  
+    const savedState = localStorage.getItem('createEventState');
+    if(savedState) {
+
+      const loadedState = JSON.parse(savedState);
+
+      setSelectedCategory(selectedCategory);
+      setShowOnMainCalendar(loadedState.showOnMainCalendar);
+      setFreeEvent(loadedState.freeEvent);
+      setReservations(loadedState.reservations);
+      setMaxNbReservations(loadedState.maxNbReservations);
+      setTicketAdditionalFields(loadedState.ticketAdditionalFields);
+      setBookingType(loadedState.bookingType);
+      setFields(loadedState.fields);
+      setfieldsStringified(loadedState.fieldsStrigified);
+      setTicketFields(loadedState.ticketFields);
+      setticketFieldsStringified(loadedState.ticketFieldsStringified);
+      setInputValues(loadedState.inputValues);
+      setListTypes(loadedState.listTypes);
+      setNameCountry(loadedState.nameCountry);
+      setElements(loadedState.elements);
+      setLoading(loadedState.loading);
+      setSelectedCountryId(loadedState.selectedCountryId);
+      setnumberOfOrders(loadedState.numberOfOrders);
+      setPhoneInputs(loadedState.phoneInputs);
+      setAditionalFieldsRadio(loadedState.aditionalFieldsRadio);
+      setPhoneData(loadedState.phoneData);
+      setWebsiteData(loadedState.websiteData);
+      setTermsConditions(loadedState.termsConditions);
+      setKeywords(loadedState.keywords);
+      setCurrency(loadedState.currency);
+    }
     getlistTypes()
     getListofCurrencies()
     countryListapi()
@@ -241,6 +309,10 @@ const selectStyles = {
     getKeywords()
 
   },[])
+
+  useEffect(() => {
+    saveStateToLocalStorage();
+  },[selectedCategory])
 
   const getCategoryFields = (category) => {
     switch (category) {
@@ -555,7 +627,7 @@ const createEventVenue = async(inputValue) => {
 }
 
   return (
-  <div className='backgroundCreateEvent' style={{height: '200vh'}}>
+  <div className='backgroundCreateEvent' style={{minHeight: '200vh'}}>
     <div className="container">
       <div className="category-list">
         {Object.keys(categories).map((category) => (
@@ -694,8 +766,11 @@ const createEventVenue = async(inputValue) => {
             
                     {reservations === '1' && bookingType === 'Booking on Eventbuz' && (
                       <>
+                        <button className="userProfileButton" style={{height: 30, marginLeft: 250, marginTop: 30 }} onClick={addTicketField}><a style={{marginLeft: 35}}>Add Ticket Field</a></button>
+
                          {ticketFields.map((field, idx) => (
                             <div key={idx} className="ticket-field-row">
+                                <FontAwesomeIcon icon={faTrashAlt} onClick={() => removeTicketField(idx)} style={{ color: 'red', fontSize: '15px', marginTop: 23 }} />
                                 <input 
                                     type="text" 
                                     placeholder="Category Name" 
@@ -717,25 +792,17 @@ const createEventVenue = async(inputValue) => {
                                     onChange={(e) => handleTicketInputChange(idx, 'number_of_tickets', e)}
                                     style={{backgroundColor: "#3b3b3b"}}
                                 />
-                                <button onClick={() => removeTicketField(idx)}>Remove</button>
+                                {/* <button className="userProfileButton" onClick={() => removeTicketField(idx)}><a>Remove</a></button> */}
+
                             </div>
                         ))}
-                        <button onClick={addTicketField}>+ Add Ticket Field</button>
                         
-                        <div style={{display:"flex"}}>
-                          <label style={{marginTop: 6, color:"#FFF"}}>Ticket Additional Fields:</label>
-                          <input 
-                            type="checkbox" 
-                            checked={ticketAdditionalFields} 
-                            style={{width: 15, height:15, marginLeft: 20, backgroundColor: "#3b3b3b"}}
-                            onChange={() => {setAditionalFieldsRadio(!aditionalFieldsRadio)}}
-                            
-                          />
-                          {aditionalFieldsRadio && (
+                        
+                          
 
-                          <button style={{marginLeft: 30, marginTop: 7}} onClick={addFieldsOp}>Add Field</button>
-                          )}
-                      </div>
+                          <button className="userProfileButton"  style={{marginTop: 35, height: 30, marginLeft: 250}} onClick={addFieldsOp}><a style={{marginLeft: 50}}>Add Field</a></button>
+                         
+                      
                       {fields.map(field => (
                       <FieldRow 
                       key={field.id} 
@@ -798,7 +865,7 @@ const createEventVenue = async(inputValue) => {
                         onChange={(e) => handleInputChange(e, 'tag_line')}
                         style={{backgroundColor: "#3b3b3b"}}
                     />
-                    {/* <label style={{color:"#FFF", marginTop:20}}>Event Terms & Conditions</label> */}
+                    <label style={{color:"#FFF", marginTop:20}}>Event Terms & Conditions</label>
                     <CKeditor
                       name="editor1" 
                       onChange={setTermsConditions} 
@@ -963,6 +1030,7 @@ const createEventVenue = async(inputValue) => {
                         <label>{title}</label>
                         {title == "country" && (
                           <Select options={nameCountry} 
+                            styles={selectStyles}
                           onChange={(selectedOption) => handleCountryChange("country", selectedOption)}
 
                             value={nameCountry.find(option => option.value === selectedCountryId)}
@@ -986,19 +1054,16 @@ const createEventVenue = async(inputValue) => {
                         <div key={`${selectedCategory}-${index}`} className="input-group">
                           <label>{title}</label>
                           {title === "Contact Phone" ? (
-                            
-                            <div className="SignupField" style={{marginTop: 0}}>
-                           
-                            
-                            
+ 
                             <PhoneInput
-                                style={{width: "98%", marginTop:0, marginLeft: 0, borderRadius: 10, backgroundColor: "#3b3b3b", border: "1px solid #cccccc" }}
+                                style={{marginTop:0, marginLeft: 0, borderRadius: 10, backgroundColor: "#3b3b3b", border: "1px solid #cccccc", minWidth:'100%'}}
                                 placeholder="Enter phone number"
                                 
                                 value={inputValues[title] || ''}
-                                onChange={(value) => handleInputChange({ target: { value } }, title)}/>
+                                onChange={(value) => handleInputChange({ target: { value } }, title)}
+                            />
                             
-                        </div>
+                        
                             
                           ) : (
                             <input
@@ -1115,6 +1180,7 @@ const createEventVenue = async(inputValue) => {
           height: 400px;
           border-radius: 10px;
         }
+        
         
       `}</style>
     </div>
