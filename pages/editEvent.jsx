@@ -107,52 +107,46 @@ const EditEvent = () => {
       };
       
       const handleInputChange = (fieldName, selectedOptions) => {
+        if (fieldName === 'types') {
+          // For 'types', handle it as a multi-select
+          const updatedTypes = selectedOptions.map(option => ({
+              id: option.value,
+              name: option.label
+          }));
+  
+          setInputValues(prevValues => ({
+              ...prevValues,
+              [fieldName]: updatedTypes
+          }));
+      } else {
         if (fieldName === 'keyword') {
-            // Ensure the format is an array of { value, label } objects
-            const updatedKeywords = selectedOptions.map(option => ({
-                value: option.value,
-                label: option.label
-            }));
-    
-            setInputValues(prevValues => ({
-                ...prevValues,
-                [fieldName]: updatedKeywords
-            }));
-        } else if (Array.isArray(selectedOptions)) {
-            // Handle other multi-select fields similarly
-            const values = selectedOptions.map(option => ({
-                value: option.value,
-                label: option.label
-            }));
-    
-            setInputValues(prevValues => ({
-                ...prevValues,
-                [fieldName]: values
-            }));
-        } else {
-            // Handle single select or text inputs
-            setInputValues(prevValues => ({
-                ...prevValues,
-                [fieldName]: selectedOptions ? { value: selectedOptions.value, label: selectedOptions.label } : ''
-            }));
-        }
+          // Ensure the format is an array of { value, label } objects
+          const updatedKeywords = selectedOptions.map(option => ({
+              value: option.value,
+              label: option.label
+          }));
+  
+          setInputValues(prevValues => ({
+              ...prevValues,
+              [fieldName]: updatedKeywords
+          }));
+      } else if (Array.isArray(selectedOptions)) {
+          // Handle other multi-select fields similarly
+          const values = selectedOptions.map(option => ({
+              value: option.value,
+              label: option.label
+          }));
+  
+          setInputValues(prevValues => ({
+              ...prevValues,
+              [fieldName]: values
+          }));
+      }
+  };
+        
+        
     };
     
-    const handleCreateKeyword = (inputValue) => {
-        const newOption = {
-            value: inputValue.toLowerCase(), // Ensure unique value
-            label: inputValue
-        };
-    
-        // Add the new keyword to both the keywords list and the selected keywords
-        setKeywords(prevKeywords => [...prevKeywords, newOption]);
-    
-        // Update the inputValues for keywords
-        setInputValues(prevValues => ({
-            ...prevValues,
-            keyword: [...prevValues.keyword, newOption]
-        }));
-    };
     
       
     const populateFormWithEventData = (eventData) => {
