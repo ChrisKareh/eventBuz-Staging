@@ -22,15 +22,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/cardDescription": [
+    "/editEvent": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/cardDescription.js"
-    ],
-    "/createEvent": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/createEvent.js"
+      "static/chunks/pages/editEvent.js"
     ]
   },
   "ampFirstPages": []

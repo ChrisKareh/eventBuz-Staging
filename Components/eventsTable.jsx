@@ -1,11 +1,11 @@
 // EventTable.js (create a new file for this component in your components directory)
 import React, { useEffect, useState } from 'react';
-import styles from '../styles/EventTable.module.css'; // Import the CSS module you will create
-import axios from 'axios';
+import Router, { useRouter } from 'next/router';
 const EventTable = ({events}) => {
 // const [events, setEvents] = useState([])
 
   console.log("Events inside the component",  events)
+  const router = useRouter()
 
   // Check if the events prop is an array before rendering
   if (!Array.isArray(events)) {
@@ -21,6 +21,7 @@ const EventTable = ({events}) => {
       borderCollapse: 'collapse',
       color: 'white', // Set the text color for all table data to white
       marginTop: '50px', 
+      marginLeft: '30px'
     },
     th: {
       backgroundColor: '#B62872', // Updated to the new color
@@ -32,6 +33,8 @@ const EventTable = ({events}) => {
       padding: '8px',
       textAlign: 'left',
       borderBottom: '1px solid #ddd',
+      backgroundColor: '#2a2b2e',
+      color: '#FFF',
     },
     image: {
       width: '100px',
@@ -47,11 +50,26 @@ const EventTable = ({events}) => {
       fontSize: '0.9em',
     },
     tableContainer: {
-      boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
+      // boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
       transition: '0.3s',
       borderRadius: '5px',
       overflow: 'hidden',
+      marginTop: '100px',
+      width: '70%'
     },
+    editButton: {
+      padding: '6px 15px',
+      backgroundColor: '#4CAF50', // Example green color
+      color: 'white',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      fontSize: '0.9em',
+    },
+  }
+  const handleEdit = (eventID) => {
+    
+    router.push(`/editEvent?eventID=${eventID}`)
   }
     
   
@@ -67,6 +85,8 @@ const EventTable = ({events}) => {
               <th style={styles.th}>Country</th>
               <th style={styles.th}>City</th>
               <th style={styles.th}>Schedules</th>
+              <th style={styles.th}>Edit</th> {/* New header for edit action */}
+
             </tr>
           </thead>
           <tbody>
@@ -90,16 +110,22 @@ const EventTable = ({events}) => {
                 <td style={styles.td}>{event.venue_location ? event.venue_location.city : 'N/A'}</td>
                 <td style={styles.td}>
                   {event.schedules.length > 0 ? (
-                    <ul style={styles.list}>
-                      {event.schedules.map((schedule) => (
-                        <li key={schedule.id} style={styles.listItem}>
-                          {`${schedule.start_date} ${schedule.start_time} - ${schedule.end_date} ${schedule.end_time}`}
-                        </li>
-                      ))}
-                    </ul>
+                    <>
+                      {`Start: ${event.schedules[0].start_date} ${event.schedules[0].start_time}`}
+                      <br />
+                      {`End: ${event.schedules[event.schedules.length - 1].end_date} ${event.schedules[event.schedules.length - 1].end_time}`}
+                    </>
                   ) : (
                     'No schedules'
                   )}
+                </td>
+                <td style={styles.td}>
+                  <button 
+                    onClick={() => handleEdit(event.id)} // Replace with your edit function or navigation logic
+                    style={styles.editButton}
+                  >
+                    Edit
+                  </button>
                 </td>
               </tr>
             ))}

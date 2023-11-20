@@ -13,11 +13,11 @@ import { createEvent } from './api/auth/APICalls';
 import MapComponent from '@/Components/MapComponent';
 import { useSelector } from 'react-redux';
 import CKeditor from '@/Components/ckEditor';
-import { toast } from 'react-toastify';
 import { images } from '@/next.config';
 import Scheduler from '@/Components/oldEventCalendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import {toast} from 'react-toastify'
 
 
 const categories = {
@@ -267,6 +267,10 @@ const saveStateToLocalStorage = () => {
     console.log('WHAT ARE THE INPUT VALUES ?',inputValues)
   },[inputValues])
 
+  useEffect(() => {
+    saveStateToLocalStorage();
+  }, [selectedCategory, showOnMainCalendar, freeEvent, reservations, maxNbReservations, ticketAdditionalFields, bookingType, fields, fieldsStrigified, ticketFields, ticketFieldsStringified, inputValues, listTypes, nameCountry, elements, loading, selectedCountryId, numberOfOrders, phoneInputs, aditionalFieldsRadio, phoneData, websiteData, termsConditions, keywords, currency]);
+
   
 
   useEffect(() => {
@@ -421,6 +425,10 @@ const saveStateToLocalStorage = () => {
     console.log(value.label)
     setCountry(value)
     console.log(country)
+  }
+
+  const handleValueChange = (fieldId, newValue) => {
+    console.log("New Value for field", fieldId, "is", newValue)
   }
 
   const executeApiCall = () => {
@@ -675,9 +683,22 @@ const createEventVenue = async(inputValue) => {
             );
             case "Options":
               const addFieldsOp = () => {
-                const newFields = [...fields];
-                newFields.push({ id:new Date().getTime()})
-                setFields(newFields);   
+                // const newFields = [...fields];
+                // newFields.push({ id:new Date().getTime()})
+                // setFields(newFields);  
+                
+                 // Check if any field has an empty 'name'.
+                  const isAnyFieldNameEmpty = fields.some(field => !field.name.trim());
+
+                  if (isAnyFieldNameEmpty) {
+                    // Alert the user or handle the error as needed
+                    
+                    toast.error("Please fill in the name for all fields before adding a new one.")
+                  } else {
+                    // All field names are filled, proceed to add a new field
+                    const newFields = [...fields, { id: new Date().getTime(), name: '', type: 'Text', isRequired: false }];
+                    setFields(newFields);
+                  }
                }
  
               
@@ -766,8 +787,7 @@ const createEventVenue = async(inputValue) => {
             
                     {reservations === '1' && bookingType === 'Booking on Eventbuz' && (
                       <>
-                        <button className="userProfileButton" style={{height: 30, marginLeft: 250, marginTop: 30 }} onClick={addTicketField}><a style={{marginLeft: 35}}>Add Ticket Field</a></button>
-
+                        <div style={{width:'100%', height: '10%', marginTop:90}}></div>
                          {ticketFields.map((field, idx) => (
                             <div key={idx} className="ticket-field-row">
                                 <FontAwesomeIcon icon={faTrashAlt} onClick={() => removeTicketField(idx)} style={{ color: 'red', fontSize: '15px', marginTop: 23 }} />
@@ -796,21 +816,29 @@ const createEventVenue = async(inputValue) => {
 
                             </div>
                         ))}
-                        
+                        <button className="userProfileButton" style={{height: 30, marginLeft: 770, marginTop: 10}} onClick={addTicketField}><a style={{marginLeft: 35}}>Add Ticket Field</a></button>
+
                         
                           
 
-                          <button className="userProfileButton"  style={{marginTop: 35, height: 30, marginLeft: 250}} onClick={addFieldsOp}><a style={{marginLeft: 50}}>Add Field</a></button>
                          
-                      
-                      {fields.map(field => (
+
+                      <div style={{width:'100%', height: '10%', marginTop:90}}></div>
+                      <a style={{fontSize: 25}}>Additional Fields</a>
+                      {fields.map((field, index, array) => (
                       <FieldRow 
                       key={field.id} 
                       field={field}
                       onInputChange={handleFieldRowChange} 
                       onDelete={deleteFieldRow} 
+                      isOnlyField={index == 0}
+                      onValueChange={(newValue) => handleValueChange(field.id, newValue)}
+                      
+
                     />
                         ))}
+                     <button className="userProfileButton"  style={{marginTop: 10, height: 30, marginLeft: 770}} onClick={addFieldsOp}><a style={{marginLeft: 50}}>Add Field</a></button>
+
                       </>
                     )}
                     {reservations === '1' && bookingType === 'Url' && (
@@ -863,7 +891,7 @@ const createEventVenue = async(inputValue) => {
                         type="text" 
                         placeholder="Tag Line" 
                         onChange={(e) => handleInputChange(e, 'tag_line')}
-                        style={{backgroundColor: "#3b3b3b"}}
+                        style={{backgroundColor: "#3b3b3b", marginTop: 90}}
                     />
                     <label style={{color:"#FFF", marginTop:20}}>Event Terms & Conditions</label>
                     <CKeditor

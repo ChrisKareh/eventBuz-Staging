@@ -24,22 +24,8 @@ const HeaderSignedIn = () => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    useEffect(async () => {
-        if(typeof window !== 'undefined'){
-            const storedSwitched = window.localStorage.getItem('switched')
-            const notUsername = window.localStorage.getItem('notUsername')
+    useEffect(() => {
 
-            if (storedSwitched) {
-                console.log("local storage exist", storedSwitched)
-                setwaddup(storedSwitched)
-            }
-
-            if(notUsername){
-                setwaddupData(notUsername)
-            }
-            console.log("local storage empty", storedSwitched)
-        }
-        
         
 
 
@@ -158,7 +144,7 @@ const HeaderSignedIn = () => {
 
                     {/* <hr className="Verticall"/> */}
 
-                    <button className="userProfileButton">
+                    <button style={{marginLeft: 360}} className="userProfileButton">
 
                         <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                              width="20" height="20" viewBox="0 0 512.000000 512.000000"

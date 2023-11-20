@@ -54,6 +54,15 @@ const myEvents = () => {
     //    switchProfile()
     getEvents()
     }, []);
+    useEffect(() => {
+      // When the component mounts
+      document.body.style.setProperty('--color-page-background', '#2a2b2e');
+  
+      // When the component unmounts
+      return () => {
+        document.body.style.setProperty('--color-page-background', 'white'); // Reset to original color
+      };
+    }, []);
 
     const getEvents = () => {
         let config = {
@@ -75,29 +84,37 @@ const myEvents = () => {
             console.log(error);
           })
     }
+
+    const styles = {
+      pageBackground :{
+        backgroundColor: '#2a2b2e',
+      }
+    }
     
 
 
     return (
         <>
-            <HeaderSignedIn />
+        <HeaderSignedIn />
             <SecondaryHeader />
+            <div style={{ backgroundColor: '#2a2b2e', top: 0 }}> {/* Inline styling */}
+            
 
+            <button onClick={() => {router.push('/createEvent')}} className="justAbutton" style={{zIndex: 1000000, marginTop: -20}}> <span style={{marginLeft: 18}}>Create Event</span> </button>
 
-            <div className="Home"style={{minHeight: '210vh'}}>
-                <div style={{paddingTop: 100}}className="top-left-Profile">
-                <button onClick={() => {router.push('/createEvent')}} className="justAbutton" style={{zIndex: 1000000, marginTop: -20}}> <span style={{marginLeft: 18}}>Create Event</span> </button>
-                    {/* <img className="userImage" src={image1.src} /> */}
-                    <eventsHeader />
-                    <EventTable events={events} />
+            
+                
+            {/* <img className="userImage" src={image1.src} /> */}
+            {/* <eventsHeader /> */}
+            <EventTable events={events} />
     
-                </div>
+               
+
+          </div>
 
 
 
-
-
-            </div>
+            
 
 
 
