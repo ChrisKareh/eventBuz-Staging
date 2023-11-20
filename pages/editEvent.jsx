@@ -18,7 +18,7 @@ const EditEvent = () => {
     const router = useRouter();
     const { eventID } = router.query;
 
-    console.log("[+] Types List ",listTypes)
+    
 
     useEffect(() => {
         if (eventID) {
@@ -49,7 +49,7 @@ const EditEvent = () => {
       }
       await axios.request(config)
       .then((response) => {
-          console.log(response.data.data)
+          //console.log(response.data.data)
           
   
         const nameTypes = response.data.data.map(item => ({
@@ -59,7 +59,7 @@ const EditEvent = () => {
         setListTypes(nameTypes)
       })
       .catch((error) => {
-          console.log(error)
+          //console.log(error)
       })
     }
     const getKeywords = () => {
@@ -77,7 +77,7 @@ const EditEvent = () => {
     
     axios.request(config)
     .then((response) => {
-      console.log("[+] KEYWORDS",response.data.data);
+      //console.log("[+] KEYWORDS",response.data.data);
       
       const keywordOptions = response.data.data.map((item) => ({
         value: item.id,
@@ -86,7 +86,7 @@ const EditEvent = () => {
       setKeywords(keywordOptions);
     })
     .catch((error) => {
-      console.log(error);
+      //console.log(error);
     });
     }
     
@@ -107,56 +107,53 @@ const EditEvent = () => {
       };
       
       const handleInputChange = (fieldName, selectedOptions) => {
-        if (typeof selectedOptions === 'string' || selectedOptions instanceof String) {
-          // Handling text input changes
-          setInputValues(prevValues => ({
-            ...prevValues,
-            [fieldName]: selectedOptions
-          }));
+        if (fieldName === 'keyword') {
+            // Ensure the format is an array of { value, label } objects
+            const updatedKeywords = selectedOptions.map(option => ({
+                value: option.value,
+                label: option.label
+            }));
+    
+            setInputValues(prevValues => ({
+                ...prevValues,
+                [fieldName]: updatedKeywords
+            }));
         } else if (Array.isArray(selectedOptions)) {
-          // Handling multi-select scenario
-          const values = selectedOptions.map(option => ({
-            id: option.value,
-            name: option.label,
-          }));
-          setInputValues(prevValues => ({
-            ...prevValues,
-            [fieldName]: values,
-          }));
+            // Handle other multi-select fields similarly
+            const values = selectedOptions.map(option => ({
+                value: option.value,
+                label: option.label
+            }));
+    
+            setInputValues(prevValues => ({
+                ...prevValues,
+                [fieldName]: values
+            }));
         } else {
-          // Handling single select scenario
-          const value = selectedOptions
-            ? { id: selectedOptions.value, name: selectedOptions.label }
-            : '';
-      
-          if (fieldName === 'keyword') {
-            // Check if the newly created keyword is not in the options list
-            if (!keywords.some(keyword => keyword.value === value.id)) {
-              // Add the newly created keyword to the options list
-              setKeywords(prevKeywords => [...prevKeywords, value]);
-              handleCreateKeyword(selectedOptions.value)
-            }
-          }
-          // For other fields, directly update the inputValues
-          setInputValues(prevValues => ({
-            ...prevValues,
-            [fieldName]: value,
-          }));
+            // Handle single select or text inputs
+            setInputValues(prevValues => ({
+                ...prevValues,
+                [fieldName]: selectedOptions ? { value: selectedOptions.value, label: selectedOptions.label } : ''
+            }));
         }
-      };
-      const handleCreateKeyword = (inputValue) => {
+    };
+    
+    const handleCreateKeyword = (inputValue) => {
         const newOption = {
-          value: inputValue, // Generate a unique value for the new keyword
-          label: inputValue,
+            value: inputValue.toLowerCase(), // Ensure unique value
+            label: inputValue
         };
+    
+        // Add the new keyword to both the keywords list and the selected keywords
         setKeywords(prevKeywords => [...prevKeywords, newOption]);
-        // Update the inputValues for keywords as well
+    
+        // Update the inputValues for keywords
         setInputValues(prevValues => ({
-          ...prevValues,
-          keyword: [...prevValues.keyword, newOption]
+            ...prevValues,
+            keyword: [...prevValues.keyword, newOption]
         }));
-      };
-      
+    };
+    
       
     const populateFormWithEventData = (eventData) => {
       const transformedTypes = eventData.types.map(type => ({
@@ -171,7 +168,7 @@ const EditEvent = () => {
           label: keyword.name  // Use the same string as label
         }));
       }
-        console.log("Types for the select field", transformedTypes)
+        //console.log("Types for the select field", transformedTypes)
         setInputValues({
             name: eventData.name || '',
             type: transformedTypes,
@@ -188,11 +185,12 @@ const EditEvent = () => {
             social_media: eventData.social_media || '',
             options: eventData.options || '',             
         });
+        console.log("Keywords in inputValues",inputValues.keyword)
     };
 
     // Observe changes to inputValues
     useEffect(() => {
-        console.log("[+] InputValues Updated:", inputValues);
+        //console.log("[+] InputValues Updated:", inputValues);
     }, [inputValues]);
 
     // Add the return statement for your component's JSX
@@ -232,7 +230,7 @@ const EditEvent = () => {
                 isMulti options={keywords}  
                 value={inputValues.keyword}
                 onChange={selectedOptions => handleInputChange('keyword', selectedOptions)}
-                onCreateOption={handleCreateKeyword}
+                
             />
             
                 ) : title== "type" ? (
@@ -274,7 +272,7 @@ const EditEvent = () => {
   >
     <a 
       onClick={() => {
-        // console.log(inputValues)
+        // //console.log(inputValues)
         // createEvent(inputValues)
         nextCategory()
         executeApiCall()

@@ -181,7 +181,7 @@ let config = {
     'Content-Type': 'application/json'
   }
 };
-
+// 🟣 Kurisu
 axios.request(config)
 .then((response) => {
   console.log(JSON.stringify(response.data.data));
