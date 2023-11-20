@@ -18,12 +18,17 @@ const EditEvent = () => {
     const router = useRouter();
     const { eventID } = router.query;
 
+    console.log("[+] Types List ",listTypes)
+
     useEffect(() => {
         if (eventID) {
             getEventDetails();
+            getlistTypes();
+            getKeywords();
         }
     }, [eventID]); // Ensure useEffect runs when eventID changes
 
+    //APIs
     const getEventDetails = async () => {
         try {
             const response = await axios.get(`https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/events/${eventID}/details`);
@@ -33,6 +38,58 @@ const EditEvent = () => {
             toast.error('Failed to fetch event data');
         }
     };
+    const getlistTypes = async () => {
+      const axios = require('axios');
+  
+    let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/events/type',
+        
+      }
+      await axios.request(config)
+      .then((response) => {
+          console.log(response.data.data)
+          
+  
+        const nameTypes = response.data.data.map(item => ({
+          value: item.id,
+          label:item.name
+        }));
+        setListTypes(nameTypes)
+      })
+      .catch((error) => {
+          console.log(error)
+      })
+    }
+    const getKeywords = () => {
+      const axios = require('axios');
+    
+    let config = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/keyword/all',
+      headers: { 
+        'Accept': 'application/json', 
+        'Content-Type': 'application/json'
+      }
+    };
+    
+    axios.request(config)
+    .then((response) => {
+      console.log("[+] KEYWORDS",response.data.data);
+      
+      const keywordOptions = response.data.data.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }));
+      setKeywords(keywordOptions);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    }
+    
 
     const categories = {
         "General Information": ["name", "type", "keyword", "description"],
@@ -48,31 +105,77 @@ const EditEvent = () => {
         // "Invitations": ["Invitation List", "Summaries", "On App Message", "Email Message", ],
         // "Ticketing": ["Contact Name", "Contact Phone", "Contact Email"],
       };
-
-      const getCategoryFields = (category) => {
-        switch (category) {
-          case "General Information":
-            return categories["General Information"];
-          case "Venue Location":
-            return categories["Venue Location"];
-            case "Contact Person":
-              return categories["Contact Person"];
-            case "Contact Persons":
-              return categories["Contact Persons"];
-            case "Social Media":
-              return categories["Social Media"];
-            case "Options":
-              return categories["Options"];        
-          default:
-            return [];
+      
+      const handleInputChange = (fieldName, selectedOptions) => {
+        if (typeof selectedOptions === 'string' || selectedOptions instanceof String) {
+          // Handling text input changes
+          setInputValues(prevValues => ({
+            ...prevValues,
+            [fieldName]: selectedOptions
+          }));
+        } else if (Array.isArray(selectedOptions)) {
+          // Handling multi-select scenario
+          const values = selectedOptions.map(option => ({
+            id: option.value,
+            name: option.label,
+          }));
+          setInputValues(prevValues => ({
+            ...prevValues,
+            [fieldName]: values,
+          }));
+        } else {
+          // Handling single select scenario
+          const value = selectedOptions
+            ? { id: selectedOptions.value, name: selectedOptions.label }
+            : '';
+      
+          if (fieldName === 'keyword') {
+            // Check if the newly created keyword is not in the options list
+            if (!keywords.some(keyword => keyword.value === value.id)) {
+              // Add the newly created keyword to the options list
+              setKeywords(prevKeywords => [...prevKeywords, value]);
+              handleCreateKeyword(selectedOptions.value)
+            }
+          }
+          // For other fields, directly update the inputValues
+          setInputValues(prevValues => ({
+            ...prevValues,
+            [fieldName]: value,
+          }));
         }
-      }
-
+      };
+      const handleCreateKeyword = (inputValue) => {
+        const newOption = {
+          value: inputValue, // Generate a unique value for the new keyword
+          label: inputValue,
+        };
+        setKeywords(prevKeywords => [...prevKeywords, newOption]);
+        // Update the inputValues for keywords as well
+        setInputValues(prevValues => ({
+          ...prevValues,
+          keyword: [...prevValues.keyword, newOption]
+        }));
+      };
+      
+      
     const populateFormWithEventData = (eventData) => {
+      const transformedTypes = eventData.types.map(type => ({
+        value: type.id,
+        label: type.name
+      }));
+      
+      let transformedKeywords = [];
+      if (Array.isArray(eventData.keywords)) {
+        transformedKeywords = eventData.keywords.map(keyword => ({
+          value: keyword.id, // Assuming keyword is a string or has a similar structure
+          label: keyword.name  // Use the same string as label
+        }));
+      }
+        console.log("Types for the select field", transformedTypes)
         setInputValues({
             name: eventData.name || '',
-            type: eventData.type || '',
-            keyword: eventData.keyword || '',
+            type: transformedTypes,
+            keyword: transformedKeywords,
             description: eventData.description || '',
             contact: eventData.contact || '',
             types: eventData.types || '',
@@ -127,15 +230,9 @@ const EditEvent = () => {
                 <CreatableSelect 
                 key={`${selectedCategory}-${title}`} 
                 isMulti options={keywords}  
-                onChange={(selectedOptions) => {
-                    const syntheticEvent = {
-                        target: {
-                            name: title,
-                            value: JSON.stringify(selectedOptions.map(option => option.value))
-                        }
-                    };
-                    handleInputChange(syntheticEvent);
-                }}
+                value={inputValues.keyword}
+                onChange={selectedOptions => handleInputChange('keyword', selectedOptions)}
+                onCreateOption={handleCreateKeyword}
             />
             
                 ) : title== "type" ? (
@@ -144,15 +241,11 @@ const EditEvent = () => {
                     key={`${selectedCategory}-${title}`}
                     options={listTypes} 
                     isMulti  
-                    onChange={(selectedOptions) => {
-                    const syntheticEvent = {
-                        target: {
-                            name: title,
-                            value: JSON.stringify(selectedOptions.map(option => option.value))
-                        }
-                    };
-                    handleInputChange(syntheticEvent);
-                }}
+                    value={inputValues.types ? inputValues.types.map(type => ({ value: type.id, label: type.name })) : []}
+                    onChange={selectedOptions => handleInputChange('types', selectedOptions)}
+
+                
+                
                 />                                                      
                 ) : (
                 <input 
@@ -166,7 +259,7 @@ const EditEvent = () => {
                 )}
             </div>
             ));
-
+           
 
 
                 
