@@ -18,7 +18,7 @@ const EditEvent = () => {
     const router = useRouter();
     const { eventID } = router.query;
 
-    
+    let loadRendered = false;    
 
     useEffect(() => {
         if (eventID) {
@@ -108,7 +108,7 @@ const EditEvent = () => {
       
       const handleInputChange = (fieldName, selectedOptions) => {
         if (fieldName === 'types') {
-          // For 'types', handle it as a multi-select
+          
           const updatedTypes = selectedOptions.map(option => ({
               id: option.value,
               name: option.label
@@ -118,9 +118,10 @@ const EditEvent = () => {
               ...prevValues,
               [fieldName]: updatedTypes
           }));
-      } else {
+      } 
+      
         if (fieldName === 'keyword') {
-          // Ensure the format is an array of { value, label } objects
+          
           const updatedKeywords = selectedOptions.map(option => ({
               value: option.value,
               label: option.label
@@ -130,22 +131,17 @@ const EditEvent = () => {
               ...prevValues,
               [fieldName]: updatedKeywords
           }));
-      } else if (Array.isArray(selectedOptions)) {
-          // Handle other multi-select fields similarly
-          const values = selectedOptions.map(option => ({
-              value: option.value,
-              label: option.label
-          }));
-  
-          setInputValues(prevValues => ({
-              ...prevValues,
-              [fieldName]: values
-          }));
-      }
+      } 
+
+      //Handle text Inputs
+      setInputValues(prevValues => ({
+        ...prevValues,
+        [fieldName]: selectedOptions 
+    }));
   };
         
         
-    };
+    
     
     
       
@@ -245,13 +241,19 @@ const EditEvent = () => {
                     type="text" 
                     placeholder={`Enter ${title}`} 
                     value={inputValues[title] || ''}
-                    onChange={(e) => handleInputChange(e, title)}
+                    onChange={(e) => handleInputChange(title, e.target.value)}
                     style={{backgroundColor: "#3b3b3b"}}
                 />
                 )}
             </div>
             ));
-           
+           case "Venue Location":
+            const renderLoading = () => {
+              if (!loadRendered) {
+                loadRendered = true
+                return <div className='loaderContainer'><div className='loader'> </div></div>
+              }
+            }
 
 
                 
