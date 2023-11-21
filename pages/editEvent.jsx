@@ -17,6 +17,8 @@ const EditEvent = () => {
 
     const router = useRouter();
     const { eventID } = router.query;
+    const [isClientSide, setIsClientSide] = useState(false);
+
 
     let loadRendered = false;    
 
@@ -53,7 +55,7 @@ const EditEvent = () => {
           
   
         const nameTypes = response.data.data.map(item => ({
-          value: item.id,
+          value: item.id || `type-${index}`,
           label:item.name
         }));
         setListTypes(nameTypes)
@@ -107,18 +109,19 @@ const EditEvent = () => {
       };
       
       const handleInputChange = (fieldType ,fieldName, selectedOptions) => {
-        if (fieldType === 'select') {
-          // For 'types', handle it as a multi-select
+        console.log("Field Type",fieldType)
+
+        if (fieldType == 'select') {
           const updatedTypes = selectedOptions.map(option => ({
-              id: option.value,
-              name: option.label
-          }));
-  
-          setInputValues(prevValues => ({
-              ...prevValues,
-              [fieldName]: updatedTypes
-          }));
-        } else if (fieldType === 'creatableSelect') {
+            id: option.value,  
+            name: option.label
+        }));
+
+        setInputValues(prevValues => ({
+            ...prevValues,
+            [fieldName]: updatedTypes
+        }));
+        } else if (fieldType == 'creatableSelect') {
           const updatedKeywords = selectedOptions.map(option => ({
                     value: option.value,
                     label: option.label
@@ -128,11 +131,14 @@ const EditEvent = () => {
                     ...prevValues,
                     [fieldName]: updatedKeywords
                 }));
-        } 
-          setInputValues(prevValues => ({
-              ...prevValues,
-              [fieldName]: selectedOptions // Assuming selectedOptions is the event for text input
-            }));
+        } else {
+           // Handling text input
+        setInputValues(prevValues => ({
+          ...prevValues,
+          [fieldName]: selectedOptions // selectedOptions is the text value for text inputs
+      }));
+        }
+          
         
       
         
@@ -196,8 +202,10 @@ const EditEvent = () => {
 
     // Observe changes to inputValues
     useEffect(() => {
-        //console.log("[+] InputValues Updated:", inputValues);
-    }, [inputValues]);
+        console.log("List Types Keys", listTypes.map(item => item.id));
+        console.log("keywords keys", keywords.map(item => item.id));
+        setIsClientSide(true);
+    }, []);
 
     // Add the return statement for your component's JSX
     return (
@@ -228,38 +236,38 @@ const EditEvent = () => {
             if (!generalInfoFields) return <p>General Information not found</p>;
             
             return generalInfoFields.map((title, index) => (
-                <div key={`${selectedCategory}-${index}`} className="input-group">
-                <label>{title}</label>
-                {title == "keyword" ? (
+              <div key={`${selectedCategory}-${title}-${index}`} className="input-group">
+              <label>{title}</label>
+                {title == "keyword" && isClientSide ? (
                 <CreatableSelect 
-                key={`${selectedCategory}-${title}`} 
-                isMulti options={keywords}  
+                key={`${selectedCategory}-keyword`} 
+                isMulti 
+                options={keywords}  
                 value={inputValues.keyword}
-                onChange={selectedOptions => handleInputChange('creatableSelect','keyword', selectedOptions)}
-                
+                onChange={selectedOptions => handleInputChange('creatableSelect', 'keyword', selectedOptions)}
             />
             
-                ) : title== "type" ? (
+                ) : title== "type" && isClientSide ? (
                 
-                <Select 
-                    key={`${selectedCategory}-${title}`}
-                    options={listTypes} 
-                    isMulti  
-                    value={inputValues.types ? inputValues.types.map(type => ({ value: type.id, label: type.name })) : []}
-                    onChange={selectedOptions => handleInputChange('select','types', selectedOptions)}
-
-                
-                
-                />                                                      
+                  <Select 
+                      key={`${selectedCategory}-type`}
+                      options={listTypes} 
+                      isMulti  
+                      value={inputValues.types ? inputValues.types.map(type => ({
+                          value: type.id,  // Make sure this is in sync with your state
+                          label: type.name
+                      })) : []}
+                      onChange={selectedOptions => handleInputChange('select', 'types', selectedOptions)}
+                  />                  
                 ) : (
-                <input 
-                    key={`${selectedCategory}-${title}`}
-                    type="text" 
-                    placeholder={`Enter ${title}`} 
-                    value={inputValues[title] || ''}
-                    onChange={(e) => handleInputChange(title, e.target.value)}
-                    style={{backgroundColor: "#3b3b3b"}}
-                />
+                  <input 
+                  key={`${selectedCategory}-${title}`}
+                  type="text" 
+                  placeholder={`Enter ${title}`} 
+                  value={inputValues[title] || ''}
+                  onChange={(e) => handleInputChange('text', title, e.target.value)}
+                  style={{backgroundColor: "#3b3b3b"}}
+              />
                 )}
             </div>
             ));
