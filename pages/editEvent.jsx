@@ -106,9 +106,9 @@ const EditEvent = () => {
         // "Ticketing": ["Contact Name", "Contact Phone", "Contact Email"],
       };
       
-      const handleInputChange = (fieldName, selectedOptions) => {
-        if (fieldName === 'types') {
-          
+      const handleInputChange = (fieldType ,fieldName, selectedOptions) => {
+        if (fieldType === 'select') {
+          // For 'types', handle it as a multi-select
           const updatedTypes = selectedOptions.map(option => ({
               id: option.value,
               name: option.label
@@ -118,31 +118,47 @@ const EditEvent = () => {
               ...prevValues,
               [fieldName]: updatedTypes
           }));
-      } 
-      
-        if (fieldName === 'keyword') {
-          
+        } else if (fieldType === 'creatableSelect') {
           const updatedKeywords = selectedOptions.map(option => ({
-              value: option.value,
-              label: option.label
-          }));
-  
+                    value: option.value,
+                    label: option.label
+                }));
+            
+                setInputValues(prevValues => ({
+                    ...prevValues,
+                    [fieldName]: updatedKeywords
+                }));
+        } 
           setInputValues(prevValues => ({
               ...prevValues,
-              [fieldName]: updatedKeywords
-          }));
-      } 
+              [fieldName]: selectedOptions // Assuming selectedOptions is the event for text input
+            }));
+        
+      
+        
 
-      //Handle text Inputs
-      setInputValues(prevValues => ({
-        ...prevValues,
-        [fieldName]: selectedOptions 
-    }));
-  };
+      
+      }; 
         
         
+//   if (fieldName === 'keyword') {
+//     // Ensure the format is an array of { value, label } objects
+//     const updatedKeywords = selectedOptions.map(option => ({
+//         value: option.value,
+//         label: option.label
+//     }));
+
+//     setInputValues(prevValues => ({
+//         ...prevValues,
+//         [fieldName]: updatedKeywords
+//     }));
+// } 
     
-    
+// //Handle text Inputs
+// setInputValues(prevValues => ({
+//   ...prevValues,
+//   [fieldName]: selectedOptions // Assuming selectedOptions is the event for text input
+// }));
     
       
     const populateFormWithEventData = (eventData) => {
@@ -219,7 +235,7 @@ const EditEvent = () => {
                 key={`${selectedCategory}-${title}`} 
                 isMulti options={keywords}  
                 value={inputValues.keyword}
-                onChange={selectedOptions => handleInputChange('keyword', selectedOptions)}
+                onChange={selectedOptions => handleInputChange('creatableSelect','keyword', selectedOptions)}
                 
             />
             
@@ -230,7 +246,7 @@ const EditEvent = () => {
                     options={listTypes} 
                     isMulti  
                     value={inputValues.types ? inputValues.types.map(type => ({ value: type.id, label: type.name })) : []}
-                    onChange={selectedOptions => handleInputChange('types', selectedOptions)}
+                    onChange={selectedOptions => handleInputChange('select','types', selectedOptions)}
 
                 
                 
