@@ -27,7 +27,7 @@ console.log("EMAIL",email)
 let config = {
   method: 'post',
   maxBodyLength: Infinity,
-  url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/register',
+  url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/register',
   headers: {
     'Content-Type':'application/json'
   },
@@ -46,21 +46,7 @@ axios.request(config)
 
 })
 .catch((error) => {
-  if (error.response) {
-    // The request was made and the server responded with a status code
-    console.log("Only the error message",error.response.data.errors)
-    toast.error("Email or Phone Number exist")
-    console.log("Data:", error.response.data);
-    console.log("Status:", error.response.status);
-    console.log("Headers:", error.response.headers);
-
-  } else if (error.request) {
-    toast.error("Something went wrong please try again")
-    console.log("Request:", error.request);
-  } else {
-      toast.error("Something went wrong please try again")
-    console.log("Error:", error.message);
-  }
+  console.log(error);
 });
     
 
@@ -303,7 +289,7 @@ const createEvent = async (inputValue, onError) => {
 let config = {
   method: 'post',
   maxBodyLength: Infinity,
-  url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/create-event',
+  url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/create-event',
   headers: { 
     'Content-Type': 'application/json', 
     'Accept': 'application/json', 

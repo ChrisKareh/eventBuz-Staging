@@ -1,6 +1,9 @@
 // EventTable.js (create a new file for this component in your components directory)
 import React, { useEffect, useState } from 'react';
 import Router, { useRouter } from 'next/router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
+
 const EventTable = ({events}) => {
 // const [events, setEvents] = useState([])
 
@@ -66,6 +69,12 @@ const EventTable = ({events}) => {
       cursor: 'pointer',
       fontSize: '0.9em',
     },
+    editIcon: {
+      cursor: 'pointer',
+      color: 'white',
+      marginLeft: '10px'
+      // Add any other styles you want for the icon here
+    },
   }
   const handleEdit = (eventID) => {
     
@@ -82,8 +91,8 @@ const EventTable = ({events}) => {
               <th style={styles.th}>Name</th>
               <th style={styles.th}>Contact Phone Number</th>
               <th style={styles.th}>Main Photo</th>
-              <th style={styles.th}>Country</th>
-              <th style={styles.th}>City</th>
+              {/* <th style={styles.th}>Country</th>
+              <th style={styles.th}>City</th> */}
               <th style={styles.th}>Schedules</th>
               <th style={styles.th}>Edit</th> {/* New header for edit action */}
 
@@ -106,8 +115,8 @@ const EventTable = ({events}) => {
                     <span style={styles.noImageText}>No image</span>
                   )}
                 </td>
-                <td style={styles.td}>{event.venue_location ? event.venue_location.country : 'N/A'}</td>
-                <td style={styles.td}>{event.venue_location ? event.venue_location.city : 'N/A'}</td>
+                {/* <td style={styles.td}>{event.venue_location ? event.venue_location.country : 'N/A'}</td>
+                <td style={styles.td}>{event.venue_location ? event.venue_location.city : 'N/A'}</td> */}
                 <td style={styles.td}>
                   {event.schedules.length > 0 ? (
                     <>
@@ -120,12 +129,12 @@ const EventTable = ({events}) => {
                   )}
                 </td>
                 <td style={styles.td}>
-                  <button 
-                    onClick={() => handleEdit(event.id)} // Replace with your edit function or navigation logic
-                    style={styles.editButton}
-                  >
-                    Edit
-                  </button>
+                <FontAwesomeIcon 
+                  icon={faEdit} 
+                  style={styles.editIcon}
+                  onClick={() => handleEdit(event.id)}
+                />
+                    
                 </td>
               </tr>
             ))}

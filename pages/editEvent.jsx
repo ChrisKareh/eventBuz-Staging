@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import axios from 'axios'; 
 import Select from 'react-select'
 import CreatableSelect from 'react-select/creatable';
+import MapComponent from "@/Components/MapComponent";
 
 
 
@@ -13,7 +14,8 @@ const EditEvent = () => {
     const [listTypes, setListTypes] = useState([])
     const [keywords, setKeywords] = useState([])
     const [loading, setLoading] = useState(true);
-
+    const [nameCountry, setNameCountry] = useState([])
+    const [selectedCountryId, setSelectedCountryId] = useState(null);
 
     const router = useRouter();
     const { eventID } = router.query;
@@ -24,22 +26,43 @@ const EditEvent = () => {
 
     useEffect(() => {
         if (eventID) {
+            countryListapi();
             getEventDetails();
             getlistTypes();
             getKeywords();
         }
-    }, [eventID]); // Ensure useEffect runs when eventID changes
+        
+    }, [eventID, selectedCategory]); // Ensure useEffect runs when eventID changes
+
+    //Style
+    const selectStyles = {
+      option: (provided, state) => ({
+        ...provided,
+        color: state.isSelected ? 'white' : 'white',
+        backgroundColor: state.isSelected ? '#b62872' : state.isFocused ? 'grey' : 'black',  // "blue" is the hover color
+      }),
+      menu: (provided) => ({
+        ...provided,
+        backgroundColor: '#2a2b2e'
+      }),
+      singleValue: (provided) => ({
+        ...provided,
+        color: 'white'
+      }),
+    };
 
     //APIs
     const getEventDetails = async () => {
         try {
             const response = await axios.get(`https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/events/${eventID}/details`);
+            console.log("[+] EDIT DATA", response.data.data)
             populateFormWithEventData(response.data.data);
         } catch (error) {
             console.error(error);
             toast.error('Failed to fetch event data');
         }
     };
+
     const getlistTypes = async () => {
       const axios = require('axios');
   
@@ -51,7 +74,7 @@ const EditEvent = () => {
       }
       await axios.request(config)
       .then((response) => {
-          //console.log(response.data.data)
+          console.log("[+] Types List",response.data.data)
           
   
         const nameTypes = response.data.data.map(item => ({
@@ -64,6 +87,7 @@ const EditEvent = () => {
           //console.log(error)
       })
     }
+
     const getKeywords = () => {
       const axios = require('axios');
     
@@ -91,6 +115,60 @@ const EditEvent = () => {
       //console.log(error);
     });
     }
+
+    const countryListapi = () => {
+      const axios = require('axios');
+    
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/country/all',
+        headers: { }
+      };
+    
+      axios.request(config)
+      .then((response) => {
+        console.log("[+] COUNTRIES",response.data);
+    
+        // Ensure that the data exists and is an array before mapping
+        if (response.data && Array.isArray(response.data.data)) {
+          // Transform the response data to the format required by react-select
+          const formattedCountries = response.data.data.map(country => ({
+            label: country.name,
+            value: country.code, // Or whatever unique identifier you have for each country
+            id: country.id 
+    
+          }));
+          setNameCountry(formattedCountries);
+        } else {
+          console.error('Unexpected response format');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
+
+    //Venue Location Functions
+    let mapRendered = false;
+
+    const handleCategoryClick = (category) => {
+      setSelectedCategory(category);
+      setInputValues({})
+    }
+    const renderMapComponent = () => {
+      if (!mapRendered) {
+        mapRendered = true;
+        
+        return <MapComponent  onLoad={handleMapLoad}/>
+        
+      }
+    }
+    const handleMapLoad = () => {
+      setLoading(false);  // Set loading to false when the map has loaded
+    };
+  
+    
     
 
     const categories = {
@@ -194,16 +272,22 @@ const EditEvent = () => {
             additional_fields: eventData.additional_fields || '',
             media: eventData.media || '',
             venue_location: eventData.venue_location || '',
+            country: eventData.venue_location.country || '',
+            venue_name: eventData.venue_location?.venue_name || '',
+            city: eventData.venue_location?.city || '',
+            building_name: eventData.venue_location?.building_name || '',
+            room_name: eventData.venue_location?.room_name || '',
+            room_number: eventData.venue_location?.room_number || '',
+            full_address: eventData.venue_location?.full_address || '',
+            street: eventData.venue_location?.street || '',
             social_media: eventData.social_media || '',
             options: eventData.options || '',             
         });
-        console.log("Keywords in inputValues",inputValues.keyword)
+        
     };
 
     // Observe changes to inputValues
     useEffect(() => {
-        console.log("List Types Keys", listTypes.map(item => item.id));
-        console.log("keywords keys", keywords.map(item => item.id));
         setIsClientSide(true);
     }, []);
 
@@ -271,16 +355,53 @@ const EditEvent = () => {
                 )}
             </div>
             ));
-           case "Venue Location":
-            const renderLoading = () => {
-              if (!loadRendered) {
-                loadRendered = true
-                return <div className='loaderContainer'><div className='loader'> </div></div>
+            case "Venue Location":
+              const renderLoading = () => { 
+                if (!loadRendered) {
+                  loadRendered = true
+            
+                  return <div className='loaderContainer'><div className='loader'> </div></div>
+                }
               }
-            }
+              const VenueLocationFields = categories["Venue Location"];
+              
 
+              
+              return VenueLocationFields.map((title, index, fields) => (
+              <>
+                <div key={`venueLocation-${index}`} className='input-group'>
+                  {loading && (
+                    renderLoading()
+                  ) }
+                    {renderMapComponent()}
+                  <label>{title}</label>
+                  {title == "country" && (
+                    <Select options={nameCountry} 
+                      styles={selectStyles}
+                    onChange={(selectedOption) => handleCountryChange("country", selectedOption)}
+                    
+                      value={inputValues.country}
+                    />
+                  )}
 
+                  {title != "country" && (
+                        <input 
+                        style={{color: "#FFF", backgroundColor:"#3b3b3b"}} 
+                        type="text" 
+                        value={inputValues[title] || ''}
+                        onChange={(e) => {
+                          console.log("inputValue",inputValues)
+                          handleInputChange('text', title, e.target.value)}}
+                        
+                    />
+                  )}
+                </div>
                 
+              </>
+              ))
+
+
+              
         }
        })()}
 

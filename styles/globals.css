@@ -526,7 +526,7 @@ hr.Verticall{
 
   width: 800px;
   height: 190px;
-  align-items: start;
+  align-items: flex-start;
   margin-left: 40px;
 }
 
@@ -579,7 +579,7 @@ button:hover {
   border-radius: 63px;
   border: none;
   outline: none;
-  padding: 0.4vw;
+  /* padding: 0.4vw; */
   width: 380px;
   height: 40px;
   transition: .4s;
@@ -593,15 +593,16 @@ button:hover {
 }
 
 .PhoneInputCountryIcon{
-  margin-bottom: 10px;
-  margin-left: 10px;
+  margin-bottom: 30px;
+  margin-left: 30px;
+  
 }
 .PhoneInputCountryIcon--square {
   margin-bottom: 30px;
   margin-left: 10px;
 }
 .PhoneInputCountrySelectArrow{
-  margin-bottom: 15px;
+  margin-bottom: 30px;
   margin-left: 10px;
 }
 
@@ -3057,7 +3058,7 @@ a:focus-visible {
   white-space: nowrap;
   display: flex;
   flex-direction: row;
-  justify-content: start;
+  justify-content: flex-start;
 }
 
 .sec-center {
@@ -4026,4 +4027,4 @@ body .dhx_repeat_radio{
 .jsx-a3ba6080cbf8f5c6 input-fields {
   background-color: #25282d;
 }
-  
+

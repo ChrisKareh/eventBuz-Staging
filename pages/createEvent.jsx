@@ -765,7 +765,7 @@ const createEventVenue = async(inputValue) => {
                           options={[
                             { value: 'Url', label: 'Url' },
                             { value: 'Call', label: 'Call' },
-                            { value: 'Booking on Eventbuz', label: 'Booking on Eventbuz' }
+                            { value: 'booking_on_eventBuz', label: 'booking_on_eventBuz' }
                           ]}
                           value={options.find(option => option.value === bookingType)}
                           onChange={handleBookingTypeChange}

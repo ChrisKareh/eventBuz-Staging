@@ -106,7 +106,7 @@ const RegistrationUser = () => {
           fontWeight: 500,
           fontSize: "10",
           color: "#fff",
-          backgroundColor: "rgb(28,28,30)",
+          backgroundColor: "#000",
           borderRadius: "63px",
           border: "none",
           outline: "none",
@@ -124,11 +124,11 @@ const RegistrationUser = () => {
           }),
           dropdownIndicator: (provided, state) => ({
             ...provided,
-           marginLeft: 353,
-           width: 30,
-           height: 30,
+           marginLeft: 340,
+           width: 40,
+           height: 40,
            position: "absolute",
-           marginBottom: 35,
+           marginBottom: 25,
            
            
           }),
@@ -177,43 +177,43 @@ const RegistrationUser = () => {
               <div className="signUpContainer">
               <div className="SignupField" style={{paddingTop: 80}}>
                   <div className="Input">
-                      <a>First Name</a>
-                      <input type="text" name="text" className="input" onChange={e => {setName(e.currentTarget.value)}}></input>
+                      <a style={{alignSelf: "flex-start"}}>First Name</a>
+                      <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setName(e.currentTarget.value)}}></input>
                   </div>
                   <div className="Input">
-                      <a>Last Name</a>
-                      <input type="text" name="text" className="input" onChange={e => {setlastName(e.currentTarget.value)}}></input>
+                      <a style={{alignSelf: "flex-start"}}>Last Name</a>
+                      <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setlastName(e.currentTarget.value)}}></input>
                   </div>
               </div>
               <div className="SignupField">
                   <div className="Input">
-                      <a>Email</a>
-                      <input type="text" name="text" className="input" onChange={e => {setemail(e.currentTarget.value)}}></input>
+                      <a style={{alignSelf: "flex-start"}}>Email</a>
+                      <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setemail(e.currentTarget.value)}}></input>
                   </div>
                   <div className="Input">
-                      <a>Confirm Email</a>
-                      <input type="text" name="text" className="input" onChange={e => {setconfEmail(e.currentTarget.value)}}></input>
+                      <a style={{alignSelf: "flex-start"}}>Confirm Email</a>
+                      <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setconfEmail(e.currentTarget.value)}}></input>
                   </div>
               </div>
               <div className="SignupField">
                   <div>
-                      <a>Country Picker</a>
-                      <Select  styles={customStyles} options={options} value={country} onChange={changeHandler}/>
+                      <a style={{alignSelf: "flex-start"}}>Country Picker</a>
+                      <Select styles={customStyles} options={options} value={country} onChange={changeHandler}/>
                   </div>
                   <div className="Input">
-                  <a>Phone Number</a>
+                  <a style={{alignSelf: "flex-start"}}>Phone Number</a>
                   <PhoneInput
                       className='phoneInput'
                       placeholder="Enter phone number"
-                      
+                      style={{backgroundColor: "#000"}}
                       value={phoneNumber}
                       onChange={setphoneNumber}/>
                   </div>
               </div>
               <div className="SignupField">
                   <div className="Input">
-                      <a>Gender</a>
-                      <select name="" id="" className="form-control" value={gender} onChange={genderHandler}>
+                      <a style={{alignSelf: "flex-start"}}>Gender</a>
+                      <select style={{backgroundColor: "#000"}} name="" id="" className="form-control" value={gender} onChange={genderHandler}>
                 <option value="" disabled defaultValue>Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -221,14 +221,14 @@ const RegistrationUser = () => {
               </select>
                   </div>
                   <div className="Input">
-                      <a>Date Of Birth</a>
-                      <input onChange={handleDateChange}  className="input"  type="date" name="dateofbirth" id="dateofbirth" ></input>
+                      <a style={{alignSelf: "flex-start"}}>Date Of Birth</a>
+                      <input style={{backgroundColor: "#000"}} onChange={handleDateChange}  className="input"  type="date" name="dateofbirth" id="dateofbirth" ></input>
                   </div>
               </div>
               <div className="SignupField" style={{display: 'flex', flexDirection: 'row'}}>
                   <div className="Input">
-                      <a>Nationailty</a>
-                      <input type="text" name="text" className="input" onChange={e => {setNationality(e.currentTarget.value)}}></input>
+                      <a style={{alignSelf: "flex-start"}}>Nationailty</a>
+                      <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setNationality(e.currentTarget.value)}}></input>
                   </div>
                   <button className="loginButton" style={{marginTop: 35, marginLeft:280, height: 40, marginRight: 20}} onClick={ () => {
                         registerEmail(name, lastName, email, gender, phoneNumber, country.label, nationality, dob, role, signinType)
