@@ -66,6 +66,8 @@ export default function CreateEvent() {
   const [termsConditions, setTermsConditions] = useState('')  
   const [keywords, setKeywords] = useState([])
   const [currency, setCurrency] = useState('')
+  const [promoVideosImagesData, setPromoVideosImagesData] = useState(Array(8).fill({ file: null, preview: null }));
+  const [eventSponsorData, setEventSponsorData] = useState({ file: null, preview: null });
 
 
   const options = useMemo(() => countryList().getData(), [])
@@ -86,7 +88,7 @@ export default function CreateEvent() {
   let config = {
       method: 'get',
       maxBodyLength: Infinity,
-      url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/events/type',
+      url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/events/type',
       
     }
     await axios.request(config)
@@ -105,16 +107,16 @@ export default function CreateEvent() {
     })
   }
   
-  const imageSponsor = useSelector(state => state.data.sponsorPicture )
-  const createEventSponsor = async(elements) => {
+  // const ImageSponsor = useSelector(state => state.data.sponsorPicture )
+  const createEventSponsor = async(elements, image) => {
     const axios = require('axios');
     const Token = localStorage.getItem('access_Token')
     const createEvent_ID = localStorage.getItem('createEvent_ID')
-    console.log("Redux",imageSponsor)
+    console.log("Redux",ImageSponsor)
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url:'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/create-event-contact/',
+        url:'https://jonathana74.sg-host.com/event-buz-backend/api/v1/create-event-sponsor/',
         headers: {
             'Content-Type':'application/json',
             'Accept':'application/json',
@@ -123,7 +125,7 @@ export default function CreateEvent() {
         data: {
             ...elements,
             event_id:createEvent_ID,
-            sponsor_image:imageSponsor,
+            sponsor_image:eventSponsorData,
             
         }    
     }
@@ -142,7 +144,7 @@ const countryListapi = () => {
   let config = {
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/country/all',
+    url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/country/all',
     headers: { }
   };
 
@@ -175,7 +177,7 @@ const getKeywords = () => {
 let config = {
   method: 'get',
   maxBodyLength: Infinity,
-  url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/keyword/all',
+  url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/keyword/all',
   headers: { 
     'Accept': 'application/json', 
     'Content-Type': 'application/json'
@@ -350,13 +352,13 @@ const saveStateToLocalStorage = () => {
     console.log("Booking Type", bookingType)
     console.log("Additional Fields", fields)
     console.log("Pricing Category", ticketFields)
-    console.log("OPTION IMAGE", imageSponsor)
+    console.log("OPTION IMAGE", ImageSponsor)
     console.log("Max number of orders", maxNbReservations)
     console.log("Terms and conditions", termsConditions)
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url:'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/create-event-option/',
+        url:'https://jonathana74.sg-host.com/event-buz-backend/api/v1/create-event-option/',
         headers: {
             'Content-Type':'application/json',
             'Accept':'application/json',
@@ -369,7 +371,7 @@ const saveStateToLocalStorage = () => {
             bookingType:bookingType,
             additional_fields: fieldsString,
             pricing_category:priceCategoryString,
-            option_image: imageSponsor,
+            option_image: ImageSponsor,
             max_nb_of_order: maxNbReservations,
             terms_conditions: termsConditions,
             
@@ -398,7 +400,7 @@ const saveStateToLocalStorage = () => {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/create-event-additional-field',
+        url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/create-event-additional-field',
         headers: { 
           'Content-Type': 'application/json', 
           'Accept': 'application/json', 
@@ -431,6 +433,7 @@ const saveStateToLocalStorage = () => {
     console.log("New Value for field", fieldId, "is", newValue)
   }
 
+  //APIs
   const executeApiCall = () => {
     switch (selectedCategory){
       case "General Information":
@@ -611,7 +614,7 @@ const createEventVenue = async(inputValue) => {
   let config = {
       method: 'post', 
       maxBodyLength: Infinity,
-      url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/create-event-venue-location/',
+      url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/create-event-venue-location/',
       headers: {
           'Content-Type':'application/json',
           'Accept':'application/json',
@@ -626,6 +629,7 @@ const createEventVenue = async(inputValue) => {
   axios.request(config)
   .then((response) => {
       console.log(JSON.stringify(response.data));
+      toast.success("Event Location Created Successfully")
   })
   .catch((error) => {
       console.log(error)
@@ -633,8 +637,25 @@ const createEventVenue = async(inputValue) => {
       setSelectedCategory("Venue Location")
   })
 }
+const handleFileChange = (file, index, category) => {
+  const reader = new FileReader();
+  reader.onloadend = () => {
+      if (category === "Promotional Video and Images") {
+          const newFilesData = [...promoVideosImagesData];
+          newFilesData[index] = { file, preview: reader.result };
+          setPromoVideosImagesData(newFilesData);
+      } else if (category === "Event Sponsor") {
+          const newFilesData = [...eventSponsorData];
+          newFilesData[index] = { file, preview: reader.result };
+          setEventSponsorData(newFilesData);
+      }
+  };
+  reader.readAsDataURL(file);
+};
 
   return (
+    
+
   <div className='backgroundCreateEvent' style={{minHeight: '200vh'}}>
     <div className="container">
       <div className="category-list">
@@ -657,22 +678,15 @@ const createEventVenue = async(inputValue) => {
           case "Promotional Video and Images":
             return (
               <>
-              <div className='uploadZones'>   
-                <PromotionalVideosAndImages />
-                <PromotionalVideosAndImages />
-              </div>
-              <div className='uploadZones'> 
-                <PromotionalVideosAndImages />
-                <PromotionalVideosAndImages />
-              </div>
-              <div className='uploadZones'> 
-                <PromotionalVideosAndImages />
-                <PromotionalVideosAndImages />
-              </div>
-              <div className='uploadZones'> 
-                <PromotionalVideosAndImages />
-                <PromotionalVideosAndImages />
-              </div>
+               {selectedCategory === "Promotional Video and Images" && (
+                promoVideosImagesData.map((data, index) => (
+                <PromotionalVideosAndImages 
+                  key={index}
+                  fileData={data} 
+                  onFileChange={(file) => handleFileChange(file, index, "Promotional Video and Images")} 
+                />
+        ))
+    )}
             </>
             );
             case "Event Schedule":
@@ -870,7 +884,7 @@ const createEventVenue = async(inputValue) => {
                       <label style={{color: '#FFF', marginLeft:20}}>Phones</label>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                       {phoneInputs.map((phone, index) => (
-                        <div key={index} style={{ marginBottom: '10px', display:"flex" }}>
+                        <div className='inputCell' key={index} style={{ marginBottom: '10px', display:"flex" }}>
                           
                           <PhoneInput
                             placeholder = "Enter Phone Number"
@@ -904,8 +918,7 @@ const createEventVenue = async(inputValue) => {
                           height: '600px'
                       }}
                     />
-                    <label style={{color:"#FFF", marginTop:20}}>Ticket Attachment</label>
-                     <PromotionalVideosAndImages />
+                    
                   </div>
                 </>
               );
@@ -1005,13 +1018,24 @@ const createEventVenue = async(inputValue) => {
                  
                   const handleSaveAndAdd = (id) => {
                     handleAddElements();  // This will add another field set after saving
-                    createEventSponsor(elements)  
+                    createEventSponsor(elements, ImageSponsor)  
+                  }
+                  const handleEventPicture = (file) => {
+                    setImageSponsor(file)
                   }
                   return (
                     <div>
+                      {selectedCategory === "Event Sponsor" && (
+                            <PromotionalVideosAndImages 
+                                fileData={eventSponsorData} 
+                                onFileChange={(file) => handleFileChange(file)} 
+                            />
+                        )}
+
+
                     {elements.map(element => (
                       <div key={element.id} className='uploadZones'>
-                        <PromotionalVideosAndImages />
+                        
                         <div>
                           <input
                             type="text"
@@ -1208,6 +1232,8 @@ const createEventVenue = async(inputValue) => {
           height: 400px;
           border-radius: 10px;
         }
+        
+        
         
         
       `}</style>

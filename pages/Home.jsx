@@ -35,6 +35,35 @@ const Home = () => {
       })
       const username = useSelector(state => state.data.username)
 
+      useEffect(() => {
+        // When the component mounts
+        document.body.style.setProperty('--color-page-background', '#2a2b2e');
+        getAllEvensDetails()
+      },[])
+
+      const getAllEvensDetails = async () => {
+        const axios = require('axios');
+
+        let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/get-events/all',
+        headers: { 
+            'Accept': 'application/json', 
+            'Content-Type': 'application/json'
+        }
+        };
+
+        axios.request(config)
+        .then((response) => {
+        console.log(response.data);
+        })
+        .catch((error) => {
+        console.log(error);
+        });
+
+      }
+
 
       const onThumbClick = useCallback(
         (index) => {

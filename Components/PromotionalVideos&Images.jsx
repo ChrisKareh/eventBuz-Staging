@@ -3,7 +3,7 @@ import styles from '../styles/DragDropUpload.module.css'
 import { Store } from '@/Redux/store'
 import { setSponsorPicture } from '@/Redux/slice'
 
-export default function PromotionalVideosAndImages({ onFileChange }) {
+export default function PromotionalVideosAndImages({ fileData, onFileChange }) {
     const [isDragActive, setIsDragActive] = useState(false)
     const [filePreview, setFilePreview] = useState(null)
     const fileInputRef = useRef(null)
@@ -34,20 +34,17 @@ export default function PromotionalVideosAndImages({ onFileChange }) {
     const processFile = (file) => {
         const reader = new FileReader();
         reader.onloadend = () => {
-            setFilePreview(reader.result)  // Change this line to use reader.result instead of file
-            
+            onFileChange(file, reader.result);  // Call the handler from the parent component
         }
-        reader.readAsDataURL(file)
+        reader.readAsDataURL(file);
     }
 
     const handleFileChange = (event) => {
-        const file = event.target.files[0]
+        const file = event.target.files[0];
         if (file) {
-            processFile(file)
-            console.log(file)
-            Store.dispatch(setSponsorPicture(file))
+            onFileChange(file); // Call the handler from the parent component
         }
-    }
+    };
 
     return (
         <>
@@ -58,10 +55,10 @@ export default function PromotionalVideosAndImages({ onFileChange }) {
             onDrop={handleDrop}
             onClick={() => fileInputRef.current.click()} // Trigger hidden file input click on dropzone click
         >
-            {filePreview ? (
-                <img src={filePreview} alt="Uploaded Preview" className={styles.previewImage} />
+            {fileData.preview ? (
+                <img src={fileData.preview} alt="Uploaded Preview" className={styles.previewImage} />
             ) : (
-                isDragActive ? <p>Drop the file here ...</p> : <p style={{marginTop: 50, marginLeft: 70}}>Drag & drop a file or click to select one</p>
+                <p style={{marginTop: 50, marginLeft: 70}}>Drag & drop a file or click to select one</p>
             )}
             <input 
                 ref={fileInputRef} 

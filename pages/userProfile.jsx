@@ -117,7 +117,7 @@ const userProfile = () => {
         let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/switch-profile',
+        url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/switch-profile',
         headers: { 
             'Content-Type': 'application/json', 
             'Authorization': 'Bearer '+Token, 
@@ -184,7 +184,7 @@ const userProfile = () => {
         let config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/get-user-suppliers',
+        url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/get-user-suppliers',
         headers: { 
             'Content-Type': 'application/json', 
             'Authorization': 'Bearer '+ Token
@@ -206,13 +206,13 @@ const userProfile = () => {
         console.log("[+] Getting User Data ")
         
         let Token = localStorage.getItem('access_Token')
-        const profile_loggedIn = localStorage.getItem('Profile_LoggedIn')
-        console.log("Value profile loggedin",profile_loggedIn)
-        if(profile_loggedIn){ 
-            Token = localStorage.getItem('profile_access_token')
-        } else {
-            Token = localStorage.getItem('access_Token')
-        }
+        // const profile_loggedIn = localStorage.getItem('Profile_LoggedIn')
+        // console.log("Value profile loggedin",profile_loggedIn)
+        // if(profile_loggedIn){ 
+        //     Token = localStorage.getItem('profile_access_token')
+        // } else {
+        //     Token = localStorage.getItem('access_Token')
+        // }
         console.log("[+] ACCESS TOKEN", Token)
         console.log("CURRENT TOKEN",Token)
         await axios.request({
@@ -225,7 +225,7 @@ const userProfile = () => {
             
         })
         .then((response) => {
-            //console.log("User Data",response.data.data)
+            console.log("User Data",response.data.data)
             setemail(response.data.data.email)
             setphoneNumber(response.data.data.phone)
             setLocation(response.data.data.country)
@@ -380,7 +380,7 @@ const userProfile = () => {
                         </div>
                     </div>
 
-                        <div className="row">          
+                        <div style={{minHeight: '30vh'}} className="row">          
                             <ContactInfo
                                 loading={loading}
                                 

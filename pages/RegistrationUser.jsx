@@ -4,7 +4,7 @@ import {useState, useMemo, useEffect} from 'react'
 import Select from 'react-select'
 import countryList from 'react-select-country-list'
 import "react-datepicker/dist/react-datepicker.css";
-import { registerEmail } from './api/auth/APICalls'
+import { organizationTypeList, registerEmail } from './api/auth/APICalls'
 import {useRouter} from "next/router";
 import {useSelector} from "react-redux";
 import { Store } from '@/Redux/store'
@@ -16,6 +16,8 @@ import imageByIndex from '../functions/imageByIndex'
 import HorizontalCaroussel from "@/Components/HorizontalCaroussel";
 import { useCallback } from "react";
 import { Thumb } from '../Components/VerticalThumbSlider'
+import styled from 'styled-components'
+
 
 
 
@@ -53,15 +55,22 @@ const RegistrationUser = () => {
     const [nationality, setNationality] = useState('')
     const [role, setRole] = useState('')
     const [signinType, setSignInType] = useState('')
+    const [organizationName, setorganizationName] = useState('')
+    const [organizationType, setOrganizationType] = useState([])
     const options = useMemo(() => countryList().getData(), [])
 
     //Redux
     const statusMessage = useSelector( state => state.data.statusMessage)
-
+    const organizationList = useSelector(state => state.data.organizationList)
 
     const router = useRouter()
 
+    const handleRoleChange = (e) => {
+        setRole(e.target.value);
+    }
+
     useEffect(() => {
+        organizationTypeList()
         const Token = localStorage.getItem('access_Token')
         setAccessToken(Token)
         console.log("LOCAL STORAGE",Token)
@@ -84,6 +93,10 @@ const RegistrationUser = () => {
           setCountry(value)
           console.log(country)
       }
+      const TypeHandler = value => {
+        console.log("Selected value of organization type",value)
+        setOrganizationType(value)
+    }
 
       const handleEmailConfirmation= () => {
         if(email != confEmail){
@@ -165,6 +178,37 @@ const RegistrationUser = () => {
             return { ...provided, color: 'white' };  // Replace 'green' with your desired color
           },
       };
+      const StyledSelectWrapper = styled.div`
+      .css-1p3m7a8-multiValue {
+        background-color: #B62872;
+        color: #FFF;
+        border-radius: 120px !important;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center; 
+        
+      }
+      .css-wsp0cs-MultiValueGeneric {
+        margin: 0; 
+        padding-left: 5; 
+        font-size: 12px;
+        
+      }
+      .css-tj5bde-Svg {
+        margin-bottom: 10px;
+      }
+
+      .css-1qdliqf-control{
+        margin-top: 45px;
+      }
+
+      .css-12a83d4-MultiValueRemove:hover {
+        background-color: rgba(0,0,0,0);
+        color: #FFF;
+    }
+    
+    `;
 
     return (
     <>
@@ -175,75 +219,108 @@ const RegistrationUser = () => {
                   <p className="titleText">Sign Up</p>
               </div>
               <div className="signUpContainer">
-              <div className="SignupField" style={{paddingTop: 80}}>
-                  <div className="Input">
-                      <a style={{alignSelf: "flex-start"}}>First Name</a>
-                      <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setName(e.currentTarget.value)}}></input>
-                  </div>
-                  <div className="Input">
-                      <a style={{alignSelf: "flex-start"}}>Last Name</a>
-                      <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setlastName(e.currentTarget.value)}}></input>
-                  </div>
-              </div>
-              <div className="SignupField">
-                  <div className="Input">
-                      <a style={{alignSelf: "flex-start"}}>Email</a>
-                      <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setemail(e.currentTarget.value)}}></input>
-                  </div>
-                  <div className="Input">
-                      <a style={{alignSelf: "flex-start"}}>Confirm Email</a>
-                      <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setconfEmail(e.currentTarget.value)}}></input>
-                  </div>
-              </div>
-              <div className="SignupField">
-                  <div>
-                      <a style={{alignSelf: "flex-start"}}>Country Picker</a>
-                      <Select styles={customStyles} options={options} value={country} onChange={changeHandler}/>
-                  </div>
-                  <div className="Input">
-                  <a style={{alignSelf: "flex-start"}}>Phone Number</a>
-                  <PhoneInput
-                      className='phoneInput'
-                      placeholder="Enter phone number"
-                      style={{backgroundColor: "#000"}}
-                      value={phoneNumber}
-                      onChange={setphoneNumber}/>
-                  </div>
-              </div>
-              <div className="SignupField">
-                  <div className="Input">
-                      <a style={{alignSelf: "flex-start"}}>Gender</a>
-                      <select style={{backgroundColor: "#000"}} name="" id="" className="form-control" value={gender} onChange={genderHandler}>
-                <option value="" disabled defaultValue>Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Rather Not Say</option>
-              </select>
-                  </div>
-                  <div className="Input">
-                      <a style={{alignSelf: "flex-start"}}>Date Of Birth</a>
-                      <input style={{backgroundColor: "#000"}} onChange={handleDateChange}  className="input"  type="date" name="dateofbirth" id="dateofbirth" ></input>
-                  </div>
-              </div>
-              <div className="SignupField" style={{display: 'flex', flexDirection: 'row'}}>
-                  <div className="Input">
-                      <a style={{alignSelf: "flex-start"}}>Nationailty</a>
-                      <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setNationality(e.currentTarget.value)}}></input>
-                  </div>
-                  <button className="loginButton" style={{marginTop: 35, marginLeft:280, height: 40, marginRight: 20}} onClick={ () => {
-                        registerEmail(name, lastName, email, gender, phoneNumber, country.label, nationality, dob, role, signinType)
-                          setTimeout(()=> {
-                              if(statusMessage == 200) {
-                                  router.push("/Verify", { query: { param: email } }); 
-                                  // Store.dispatch(setReduxEmail(email))
-                                  // localStorage.setItem('email', email)
-                              }
-                          },1000)
-                      }}>
-                          Continue
-                      </button>
-                  
-                  </div>
+
+
+                <div className="SignupField"  style={{paddingTop: 80}} >
+                <div className="Input">
+                    <a style={{ alignSelf: "flex-start", marginLeft: '150px' }}>Role</a>
+                    <select style={{ backgroundColor: "#000", width: '500px', marginLeft: '150px' }} value={role} onChange={handleRoleChange} className="input">
+                        <option value="" disabled>Select Role</option>
+                        <option value="User">User</option>
+                        <option value="Organizer">Organizer</option>
+                    </select>
+                </div>
+                </div>
+                <div className="SignupField">
+                    
+                    
+
+                    <div className="Input">
+                        <a style={{alignSelf: "flex-start"}}>First Name</a>
+                        <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setName(e.currentTarget.value)}}></input>
+                    </div>
+                    <div className="Input">
+                        <a style={{alignSelf: "flex-start"}}>Last Name</a>
+                        <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setlastName(e.currentTarget.value)}}></input>
+                    </div>
+                </div>
+
+                <div className="SignupField">
+                    <div className="Input">
+                        <a style={{alignSelf: "flex-start"}}>Email</a>
+                        <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setemail(e.currentTarget.value)}}></input>
+                    </div>
+                    <div className="Input">
+                        <a style={{alignSelf: "flex-start"}}>Confirm Email</a>
+                        <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setconfEmail(e.currentTarget.value)}}></input>
+                    </div>
+                </div>
+
+                {role === 'Organizer' && (
+
+                <div className="SignupField">
+                    <div style={{paddingTop: "27px"}} className="Input">
+                        <a style={{alignSelf: "flex-start"}}>Organization Name</a>
+                        <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setorganizationName(e.currentTarget.value)}}></input>
+                    </div>
+                    <div className="Input">
+                        <a style={{alignSelf: "flex-start", position:"absolute", paddingTop: "20px"}} >Organization Type</a>
+                        <StyledSelectWrapper>
+                            <Select isMulti styles={customStyles} options={organizationList} value={organizationType} onChange={TypeHandler}/>
+                        </StyledSelectWrapper>
+                    </div>
+                </div>
+                )}
+
+                <div className="SignupField">
+                    <div>
+                        <a style={{alignSelf: "flex-start"}}>Country Picker</a>
+                        <Select styles={customStyles} options={options} value={country} onChange={changeHandler}/>
+                    </div>
+                    <div className="Input">
+                    <a style={{alignSelf: "flex-start"}}>Phone Number</a>
+                    <PhoneInput
+                        className='phoneInput'
+                        placeholder="Enter phone number"
+                        style={{backgroundColor: "#000"}}
+                        value={phoneNumber}
+                        onChange={setphoneNumber}/>
+                    </div>
+                </div>
+                <div className="SignupField">
+                    <div className="Input">
+                        <a style={{alignSelf: "flex-start"}}>Gender</a>
+                        <select style={{backgroundColor: "#000"}} name="" id="" className="form-control" value={gender} onChange={genderHandler}>
+                    <option value="" disabled defaultValue>Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Rather Not Say</option>
+                </select>
+                    </div>
+                    <div className="Input">
+                        <a style={{alignSelf: "flex-start"}}>Date Of Birth</a>
+                        <input style={{backgroundColor: "#000"}} onChange={handleDateChange}  className="input"  type="date" name="dateofbirth" id="dateofbirth" ></input>
+                    </div>
+                </div>
+                <div className="SignupField" style={{display: 'flex', flexDirection: 'row'}}>
+                    <div className="Input">
+                        <a style={{alignSelf: "flex-start"}}>Nationailty</a>
+                        <input style={{backgroundColor: "#000"}} type="text" name="text" className="input" onChange={e => {setNationality(e.currentTarget.value)}}></input>
+                    </div>
+                    <button className="loginButton" style={{marginTop: 35, marginLeft:280, height: 40, marginRight: 20}} onClick={ () => {
+                            registerEmail(name, lastName, email, gender, phoneNumber, country.label, nationality, dob, role, signinType, organizationName, organizationType, accessToken)
+                            setTimeout(()=> {
+                                if(statusMessage == 200) {
+                                    router.push("/Verify", { query: { param: email } }); 
+                                    // Store.dispatch(setReduxEmail(email))
+                                    // localStorage.setItem('email', email)
+                                }
+                            },1000)
+                        }}>
+                            Continue
+                        </button>
+                    
+                    </div>
                 </div>
             </div>
 

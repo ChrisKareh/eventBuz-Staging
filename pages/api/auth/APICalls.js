@@ -7,9 +7,9 @@ import {redirect} from 'next/navigation'
 import { useSelector } from 'react-redux';
 
 
-const registerEmail = (name, lastName, email, gender, phoneNumber, country, nationality, dob, role, signinType) => {
+const registerEmail = (name, lastName, email, gender, phoneNumber, country, nationality, dob, role, signinType, organizationName, organizationType) => {
 
-    const FormData = require('form-data');
+const FormData = require('form-data');
 let data = new FormData();
 data.append('name', name);
 data.append('family_name', lastName);
@@ -21,8 +21,11 @@ data.append('nationality', nationality);
 data.append('dob', dob);
 data.append('sign_in_type', signinType);
 data.append('role', role);
+data.append('organization_name', organizationName);
+data.append('organization_type', organizationType);
 
-console.log("EMAIL",email)
+console.log("DATA",data) 
+
 
 let config = {
   method: 'post',
@@ -72,7 +75,7 @@ console.log("EMAIL",email)
 let config = {
   method: 'post',
   maxBodyLength: Infinity,
-  url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/register',
+  url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/register',
   headers: {
     'Content-Type':'application/json'
   },
@@ -321,7 +324,7 @@ const createEventContact = async(inputValue, onError) => {
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url:'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/create-event-contact',
+        url:'https://jonathana74.sg-host.com/event-buz-backend/api/v1/create-event-contact',
         headers: {
             'Content-Type':'application/json',
             'Accept':'application/json',
@@ -336,6 +339,7 @@ const createEventContact = async(inputValue, onError) => {
     axios.request(config)
     .then((response) => {
         console.log(JSON.stringify(response.data));
+        toast.success("Contact Information Saved")
     })
     .catch((error) => {
         console.log(error)
@@ -354,7 +358,7 @@ const createEventSocial = async(inputValue, onError) => {
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url:'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/create-event-social-media/',
+        url:'https://jonathana74.sg-host.com/event-buz-backend/api/v1/create-event-social-media/',
         headers: {
             'Content-Type':'application/json',
             'Accept':'application/json',
@@ -385,7 +389,7 @@ const getListofCurrencies = async() => {
     let config = {
       method: 'get',
       maxBodyLength: Infinity,
-      url: 'https://jonathana74.sg-host.com/event-buz-backend-main/api/v1/currency/all',
+      url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/currency/all',
       headers: { 
         'Accept': 'application/json', 
         'Content-Type': 'application/json'
