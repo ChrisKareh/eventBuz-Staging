@@ -4028,3 +4028,9 @@ body .dhx_repeat_radio{
   background-color: #25282d;
 }
 
+.row-container {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px; /* Adjust spacing as needed */
+  margin-top: 40px;
+}

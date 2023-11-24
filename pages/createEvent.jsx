@@ -18,6 +18,7 @@ import Scheduler from '@/Components/oldEventCalendar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import {toast} from 'react-toastify'
+import FileUploadComponent from './singleFileUpload';
 
 
 const categories = {
@@ -112,7 +113,7 @@ export default function CreateEvent() {
     const axios = require('axios');
     const Token = localStorage.getItem('access_Token')
     const createEvent_ID = localStorage.getItem('createEvent_ID')
-    console.log("Redux",ImageSponsor)
+    
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
@@ -199,14 +200,7 @@ axios.request(config)
 });
 }
 
-  const handleSponsorInputChange = (id, field, value) => {
-    setElements(prevElements => prevElements.map(element =>
-        element.id === id
-            ? { ...element, [field]: value }
-            : element
-    ));
-    console.log(elements)
-};
+
 const handleTicketInputChange = (index, field, event) => {
   const value = event && event.target ? event.target.value : '';
   const newTicketFields = [...ticketFields];
@@ -677,18 +671,31 @@ const handleFileChange = (file, index, category) => {
         switch (selectedCategory) {
           case "Promotional Video and Images":
             return (
-              <>
-               {selectedCategory === "Promotional Video and Images" && (
-                promoVideosImagesData.map((data, index) => (
-                <PromotionalVideosAndImages 
-                  key={index}
-                  fileData={data} 
-                  onFileChange={(file) => handleFileChange(file, index, "Promotional Video and Images")} 
-                />
-        ))
+  <>
+    {selectedCategory === "Promotional Video and Images" && (
+      promoVideosImagesData.reduce((rows, current, index) => {
+        if (index % 2 === 0) {
+          // Start a new row
+          rows.push([current]);
+        } else {
+          // Add to the existing row
+          rows[rows.length - 1].push(current);
+        }
+        return rows;
+      }, []).map((row, rowIndex) => (
+        <div className="row-container" key={`row-${rowIndex}`}>
+          {row.map((data, dataIndex) => (
+            <PromotionalVideosAndImages 
+              key={dataIndex}
+              fileData={data} 
+              onFileChange={(file) => handleFileChange(file, dataIndex, "Promotional Video and Images")} 
+            />
+          ))}
+        </div>
+      ))
     )}
-            </>
-            );
+  </>
+);
             case "Event Schedule":
             return (
               <>
@@ -922,7 +929,6 @@ const handleFileChange = (file, index, category) => {
                   </div>
                 </>
               );
-
             case "Additional Fields":
               const addFields = () => {
                const newFields = [...fields];
@@ -1011,32 +1017,46 @@ const handleFileChange = (file, index, category) => {
                         return newElements;
                     });
                 };
+                const handleSponsorInputChange = (id, field, value) => {
+                  setElements(prevElements => prevElements.map(element =>
+                      element.id === id
+                          ? { ...element, [field]: value }
+                          : element
+                  ));
+                  console.log(elements)
+              };
                   const handleRemoveElement = (id) => {
                     console.log('Removing element with id:', id);  // Log the id value
                     setElements(prevElements => prevElements.filter(element => element.id !== id));
                 }
                  
                   const handleSaveAndAdd = (id) => {
-                    handleAddElements();  // This will add another field set after saving
-                    createEventSponsor(elements, ImageSponsor)  
+                    if(!isEventSponsorValid()){
+                      toast.error("Please fill in all the fields")
+                      
+                    } else {
+
+                      handleAddElements();  
+                      createEventSponsor(elements)  
+                    }
                   }
-                  const handleEventPicture = (file) => {
-                    setImageSponsor(file)
-                  }
+                  const handleEventSponsorFileUpload = (file) => {
+                    // Handle the file upload for Event Sponsor
+                    setEventSponsorData({ file: file, preview: URL.createObjectURL(file) });
+                };
+                const isEventSponsorValid = () => {
+                  return eventSponsorData.file !== null && elements.every(element => element.sponsorName && element.sponsorURL);
+              };
                   return (
                     <div>
-                      {selectedCategory === "Event Sponsor" && (
-                            <PromotionalVideosAndImages 
-                                fileData={eventSponsorData} 
-                                onFileChange={(file) => handleFileChange(file)} 
-                            />
-                        )}
 
 
-                    {elements.map(element => (
+
+                    {elements.map((element, index) => (
                       <div key={element.id} className='uploadZones'>
-                        
-                        <div>
+                          <FileUploadComponent onFileUpload={handleEventSponsorFileUpload} />
+
+                        <div style={{marginTop:'60px'}}>
                           <input
                             type="text"
                             placeholder='Sponsor Name'
@@ -1054,10 +1074,21 @@ const handleFileChange = (file, index, category) => {
                         </div>
                         <div style={{ display: 'flex', flexDirection:'column' ,justifyContent: 'flex-end', gap: 3, marginBottom:30, marginLeft: 60 }}>
                           <button className='userProfileButton' style={{marginLeft: 0, width: 160}} onClick={() => handleSaveAndAdd(element.id)}><a style={{marginLeft:62}}>Save</a></button>
-                          <button className='userProfileButton' style={{marginLeft: 0, width: 160}} onClick={() => handleRemoveElement(element.id)}><a style={{marginLeft:60}}>Delete</a></button>
+                          {index !== 0 && (
+                            <button disabled={!isEventSponsorValid()} className='userProfileButton' style={{marginLeft: 0, width: 160}} onClick={() => handleRemoveElement(element.id)}><a style={{marginLeft:60}}>Delete</a></button>
+                          )}
                         </div>
                       </div>
                     ))}
+                    
+                    {eventSponsorData.preview && (
+                      <>
+                        <a style={{marginTop: '30px'}}>Uploaded Image Preview</a>
+                          <div style={{marginLeft:'50px'}}className="file-preview">
+                            <img src={eventSponsorData.preview} alt="Uploaded File Preview" style={{ maxWidth: '100%', maxHeight: '300px' }} />
+                          </div>
+                      </>
+                    )}
                   </div>
                 );
                  
