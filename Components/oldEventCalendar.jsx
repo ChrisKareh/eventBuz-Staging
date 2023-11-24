@@ -156,7 +156,9 @@ const Scheduler = () => {
       });
 
       // Attach event listeners
-      dhxScheduler.attachEvent("onEventAdded", (_, event) => appendEvent(event));
+      dhxScheduler.attachEvent("onEventAdded", (_, event) => {
+        scheduleAPI();
+        appendEvent(event)});
       dhxScheduler.attachEvent("onEventChanged", (id, event) => {
         setEvents(prevEvents => prevEvents.map(e => e.id === id ? event : e));
         
@@ -175,7 +177,7 @@ const Scheduler = () => {
     }
 
     initScheduler();
-    scheduleAPI()
+    
   }, [data]);
 
   

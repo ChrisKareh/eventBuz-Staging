@@ -69,6 +69,8 @@ export default function CreateEvent() {
   const [currency, setCurrency] = useState('')
   const [promoVideosImagesData, setPromoVideosImagesData] = useState(Array(8).fill({ file: null, preview: null }));
   const [eventSponsorData, setEventSponsorData] = useState({ file: null, preview: null });
+  const initialFileData = new Array(8).fill({ preview: null });
+  const [files, setFiles] = useState(initialFileData);
 
 
   const options = useMemo(() => countryList().getData(), [])
@@ -631,22 +633,24 @@ const createEventVenue = async(inputValue) => {
       setSelectedCategory("Venue Location")
   })
 }
-const handleFileChange = (file, index, category) => {
-  const reader = new FileReader();
-  reader.onloadend = () => {
-      if (category === "Promotional Video and Images") {
-          const newFilesData = [...promoVideosImagesData];
-          newFilesData[index] = { file, preview: reader.result };
-          setPromoVideosImagesData(newFilesData);
-      } else if (category === "Event Sponsor") {
-          const newFilesData = [...eventSponsorData];
-          newFilesData[index] = { file, preview: reader.result };
-          setEventSponsorData(newFilesData);
-      }
-  };
-  reader.readAsDataURL(file);
-};
 
+const handleFileChange = (file, index) => {
+  const newFiles = files.map((f, i) => {
+      if (i === index) {
+          return { ...f, preview: URL.createObjectURL(file) };
+      }
+      return f;
+  });
+  setFiles(newFiles);
+};
+const rows = files.reduce((acc, current, index) => {
+  if (index % 2 === 0) {
+      acc.push([current]);
+  } else {
+      acc[acc.length - 1].push(current);
+  }
+  return acc;
+}, []);
   return (
     
 
@@ -671,31 +675,22 @@ const handleFileChange = (file, index, category) => {
         switch (selectedCategory) {
           case "Promotional Video and Images":
             return (
-  <>
-    {selectedCategory === "Promotional Video and Images" && (
-      promoVideosImagesData.reduce((rows, current, index) => {
-        if (index % 2 === 0) {
-          // Start a new row
-          rows.push([current]);
-        } else {
-          // Add to the existing row
-          rows[rows.length - 1].push(current);
-        }
-        return rows;
-      }, []).map((row, rowIndex) => (
-        <div className="row-container" key={`row-${rowIndex}`}>
-          {row.map((data, dataIndex) => (
-            <PromotionalVideosAndImages 
-              key={dataIndex}
-              fileData={data} 
-              onFileChange={(file) => handleFileChange(file, dataIndex, "Promotional Video and Images")} 
-            />
-          ))}
+              <div>
+            {rows.map((row, rowIndex) => (
+                <div className="row" style={{marginTop: '40px'}} key={rowIndex}> {/* Add styles for row */}
+                    {row.map((fileData, index) => (
+                        <PromotionalVideosAndImages 
+                            key={index}
+                            fileData={fileData}
+                            onFileChange={(file) => {
+                              console.log('Promotional Videos and Images Data',files)
+                              handleFileChange(file, rowIndex * 2 + index)}}
+                        />
+                    ))}
+                </div>
+            ))}
         </div>
-      ))
-    )}
-  </>
-);
+            );
             case "Event Schedule":
             return (
               <>
@@ -1029,6 +1024,10 @@ const handleFileChange = (file, index, category) => {
                     console.log('Removing element with id:', id);  // Log the id value
                     setElements(prevElements => prevElements.filter(element => element.id !== id));
                 }
+
+                const isSingleEventSponsorValid = (element) => {
+                  return element.sponsorName && element.sponsorURL;
+                }
                  
                   const handleSaveAndAdd = (id) => {
                     if(!isEventSponsorValid()){
@@ -1075,7 +1074,14 @@ const handleFileChange = (file, index, category) => {
                         <div style={{ display: 'flex', flexDirection:'column' ,justifyContent: 'flex-end', gap: 3, marginBottom:30, marginLeft: 60 }}>
                           <button className='userProfileButton' style={{marginLeft: 0, width: 160}} onClick={() => handleSaveAndAdd(element.id)}><a style={{marginLeft:62}}>Save</a></button>
                           {index !== 0 && (
-                            <button disabled={!isEventSponsorValid()} className='userProfileButton' style={{marginLeft: 0, width: 160}} onClick={() => handleRemoveElement(element.id)}><a style={{marginLeft:60}}>Delete</a></button>
+                            <button 
+                              disabled={!isSingleEventSponsorValid(element)} 
+                              className='userProfileButton' 
+                              style={{marginLeft: 0, width: 160}} 
+                              onClick={() => handleRemoveElement(element.id)}
+                            >
+                              <a style={{marginLeft:60}}>Delete</a>
+                            </button>
                           )}
                         </div>
                       </div>
