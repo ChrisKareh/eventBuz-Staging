@@ -833,7 +833,7 @@ const handleFileChange = (file, index, category) => {
                                     onChange={(e) => handleTicketInputChange(idx, 'number_of_tickets', e)}
                                     style={{backgroundColor: "#3b3b3b"}}
                                 />
-                                {/* <button className="userProfileButton" onClick={() => removeTicketField(idx)}><a>Remove</a></button> */}
+                                {/* <button classame="userPrfileButton" onClick={() => removeTicketField(idx)}><a>Remove</a></button> */}
 
                             </div>
                         ))}

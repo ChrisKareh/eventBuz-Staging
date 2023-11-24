@@ -4,6 +4,5 @@
   "/_document": "pages/_document.js",
   "/createEvent": "pages/createEvent.js",
   "/Home": "pages/Home.js",
-  "/singleFileUpload": "pages/singleFileUpload.js",
-  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js"
+  "/singleFileUpload": "pages/singleFileUpload.js"
 }
