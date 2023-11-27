@@ -153,30 +153,6 @@ const ThirdHeader = () => {
 
     }
 
-    const switchOrganizer = () => {
-        let config = {
-            method : 'post',
-            maxBodyLength: Infinity,
-            url :  'https://jonathana74.sg-host.com/event-buz-backend/api/v1/switch-profile',
-            headers: { 
-                'Content-Type': 'application/json', 
-                'Authorization': 'Bearer '+Token, 
-                
-            },
-            data: {
-                type : "main",
-                id: null,
-            } 
-        }
-        axios.request(config)
-        .then((response) => {
-            console.log(response)
-        })
-        .catch((error) => {
-            console.log(error)
-        })
-    }
-
 
     
 

@@ -91,8 +91,8 @@ const Home = () => {
 
    
         const imageMapping = {
-            '2023-08-24':'../public/image1.jpg',
-            '2023-08-25':'../public/image2.jpg',
+            '2023-11-24':'../public/image1.jpg',
+            '2023-11-25':'../public/image2.jpg',
         }
 
         const renderEventContent = (eventInfo) => {
@@ -159,7 +159,7 @@ const Home = () => {
                         initialView="dayGridMonth"
                         eventContent={renderEventContent}
                         events={[
-                            { date: '2023-08-13', image:image1.src },
+                            { date: '2023-11-13', image:image1.src },
                         ]}
                     />
                    

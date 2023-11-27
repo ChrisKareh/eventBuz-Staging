@@ -71,6 +71,8 @@ export default function CreateEvent() {
   const [eventSponsorData, setEventSponsorData] = useState({ file: null, preview: null });
   const initialFileData = new Array(8).fill({ preview: null });
   const [files, setFiles] = useState(initialFileData);
+  const [nameSponsor, setnameSponsor] = useState('')
+  const [urlSponsor, seturlSponsor] = useState('')
 
 
   const options = useMemo(() => countryList().getData(), [])
@@ -110,12 +112,23 @@ export default function CreateEvent() {
     })
   }
   
+  //transformElements from sponsorName and sponsorURL to name and url for the required fields in API
+  const transformElementsForAPI = (elements) => {
+    return elements.map(element => ({
+      name: element.sponsorName,
+      url: element.sponsorURL
+    }));
+  };
+
   // const ImageSponsor = useSelector(state => state.data.sponsorPicture )
-  const createEventSponsor = async(elements, image) => {
+  const createEventSponsor = async(elements) => {
     const axios = require('axios');
     const Token = localStorage.getItem('access_Token')
     const createEvent_ID = localStorage.getItem('createEvent_ID')
-    
+    console.log("EVENT SPONSOR",elements)
+    const transformedElements = transformElementsForAPI(elements)
+    console.log("API Sponsor Elements",transformedElements)
+    console.log(elements[0].sponsorName)
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
@@ -126,7 +139,8 @@ export default function CreateEvent() {
             'Authorization': 'Bearer '+Token,
         },
         data: {
-            ...elements,
+            name: elements[0].sponsorName,
+            url: elements[0].sponsorURL,
             event_id:createEvent_ID,
             sponsor_image:eventSponsorData,
             
@@ -1030,14 +1044,14 @@ const rows = files.reduce((acc, current, index) => {
                 }
                  
                   const handleSaveAndAdd = (id) => {
-                    if(!isEventSponsorValid()){
-                      toast.error("Please fill in all the fields")
+                    // if(!isEventSponsorValid()){
+                    //   toast.error("Please fill in all the fields")
                       
-                    } else {
+                    // } else {
 
-                      handleAddElements();  
+                      // handleAddElements();  
                       createEventSponsor(elements)  
-                    }
+                    // }
                   }
                   const handleEventSponsorFileUpload = (file) => {
                     // Handle the file upload for Event Sponsor

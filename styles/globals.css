@@ -3861,6 +3861,7 @@ body .dhx_repeat_radio{
 }
 .fc-event-main{
   background-color: #000;
+  
 }
 
 .skeletonLoader {
@@ -4033,4 +4034,17 @@ body .dhx_repeat_radio{
   justify-content: space-around;
   margin-bottom: 20px; /* Adjust spacing as needed */
   margin-top: 40px;
+}
+
+.eventimage {
+  width: 100%;        /* Makes the image take up the full width of the event box */
+  height: auto;       /* Maintains the aspect ratio of the image */
+  max-height: 50px;   /* Limits the height of the image to ensure it fits well within the event box */
+  display: block;     /* Ensures the image is correctly block-level for layout */
+  margin: 0 auto;     /* Centers the image within the event box */
+  border-radius: 5px; /* Optional: Rounds the corners of the image */
+}
+
+.fc-daygrid-day-top{
+  text-align: center;
 }
