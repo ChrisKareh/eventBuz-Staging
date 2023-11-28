@@ -12,8 +12,8 @@ const MyCalendar = () => {
     const events = [
         {
             title: 'Event 1',
-            start: new Date(2023, 3, 18),
-            end: new Date(2023, 3, 19),
+            start: new Date(2023, 11, 18),
+            end: new Date(2023, 11, 19),
             image: 'https://via.placeholder.com/150',
             url: '/event1' // URL to redirect to when the event is clicked
         },
@@ -36,7 +36,7 @@ const MyCalendar = () => {
     };
 
     return (
-        <div style={{ height: '700px' }}>
+        <div style={{ height: '800px' }}>
             <Calendar
                 localizer={localizer}
                 events={events}

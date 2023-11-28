@@ -1,8 +1,7 @@
-import { useRouter } from "next/router";
+import { Router, useRouter } from "next/router";
 import SocialLogin from "@/Components/SocialLogin";
 import Head from "next/head";
 import {useEffect, useState} from "react";
-import { checkEmail } from "./api/auth/APICalls";
 import {useSelector} from "react-redux";
 import { toast } from "react-toastify";
 import Header from "@/Components/Header";
@@ -13,7 +12,9 @@ import imageByIndex from '../functions/imageByIndex'
 import HorizontalCaroussel from "@/Components/HorizontalCaroussel";
 import { useCallback } from "react";
 import { Thumb } from '../Components/VerticalThumbSlider'
-
+import axios from "axios";
+import { Store } from "@/Redux/store";
+import { setEmailVerified, setPhoneVerified, setStatusMessage } from "@/Redux/slice";
 
 
 
@@ -81,6 +82,59 @@ const login = () =>{
         },
         [emblaMainApi, emblaThumbsApi]
       )
+
+
+      const checkEmail = async (Email, callback) => {
+        console.log('Check Email exist', Email)
+        
+        await axios.request({
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: 'https://stageeventbuz.online/api/v1/check-email',
+            // headers: {
+            //     'Content-Type' : 'application/json',
+            // },
+            data: {
+                email : Email  
+            }
+    
+        }) 
+        .then((response) => {
+            console.log("CHECK EMAIL",response.data.access_token)
+            console.log("Check Email Response",response)
+            if(response.status == 200) {
+                Store.dispatch(setStatusMessage(response.status))
+                console.log(response.data.phoneVerified)
+                if(response.data.phoneVerified || response.data.emailVerified){
+                    console.log('[+]LINE 107 IF')
+                    toast.success('Account Found')
+                    router.push('/userProfile')
+                } else {
+                    console.log('[+]Line 111 else')
+                    toast.success('Account Found!')
+                    router.push('/Verify')
+                }
+                //put the value of phoneVerified and emailVerified into two redux states
+                Store.dispatch(setPhoneVerified(response.data.phoneVerified))
+                Store.dispatch(setEmailVerified(response.data.emailVerified))        
+                // const errorMsg = isNotVerified ? "Your account isn't verified" : '';
+                localStorage.setItem('access_Token', response.data.access_token)
+                // callback(response.status, errorMsg)
+            } else {
+                callback(response.status, "Something went wrong.")
+            }
+        })
+        .catch((error) => {
+            console.log("current error",error)
+            if(error.response){
+
+                if(error.response.data.message == 'User does not exist!'){
+                    toast.error('Account not found')
+                    router.push('/RegistrationUser')
+                }
+            }
+        })
+    }
 
     const onEmailCheck = (status, errorMessage = '') => {
         console.log("Status",status)

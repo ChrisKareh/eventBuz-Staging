@@ -118,55 +118,7 @@ axios.request(config)
 
 // }
 
-const checkEmail = async (Email, callback) => {
-    console.log('Check Email exist', Email)
-    
-    await axios.request({
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: checkEmailURL,
-        headers: {
-            'Content-Type' : 'application/json',
-        },
-        data: {
-            email : Email  
-        }
 
-    }) 
-    .then((response) => {
-        console.log("CHECK EMAIL",response.data.access_token)
-        console.log("Check Email Response",response)
-        if(response.status == 200) {
-            Store.dispatch(setStatusMessage(response.status))
-            console.log(response.data.phoneVerified)
-            const isNotVerified = !response.data.phoneVerified || !response.data.emailVerified
-            //put the value of phoneVerified and emailVerified into two redux states
-            Store.dispatch(setPhoneVerified(response.data.phoneVerified))
-            Store.dispatch(setEmailVerified(response.data.emailVerified))        
-            const errorMsg = isNotVerified ? "Your account isn't verified" : '';
-            localStorage.setItem('access_Token', response.data.access_token)
-            callback(response.status, errorMsg)
-        } else {
-            callback(response.status, "Something went wrong.")
-        }
-    })
-    .catch((error) => {
-        console.log("current error",error)
-        if(error.response){
-            console.log("DATA-ERROR:",error.response.data.message)
-            console.log("STATUS-ERROR", error.response.status)
-            console.log("HEADERS-ERROR", error.response.error)
-            callback(error.response.status, error.response.data.message)
-        } else if (error.request) {
-            console.log("REQUEST-ERROR", error.request)
-            callback(500, "Server did not respond")
-        } else {
-            callback(500, error.message)
-            console.log("ERROR-MESSAGE", error.message)
-        }
-        // console.log(error)
-    })
-}
 
 const resendVerificationCode = () => {
     const Token = localStorage.getItem('access_Token')
@@ -411,4 +363,4 @@ const getListofCurrencies = async() => {
     
 }
 
-export {registerEmail, checkEmail, resendVerificationCode, verifyEmail, SendSMS, organizationTypeList, subscriptionsData, createEvent, createEventContact, createEventSocial, registerEmailOrganizer, getListofCurrencies}
+export {registerEmail,  resendVerificationCode, verifyEmail, SendSMS, organizationTypeList, subscriptionsData, createEvent, createEventContact, createEventSocial, registerEmailOrganizer, getListofCurrencies}

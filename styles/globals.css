@@ -4048,33 +4048,45 @@ body .dhx_repeat_radio{
 
 
 .customEvent {
-  height: 70px;
+  height: 130px;
   width: 220px;
   overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
-.rbc-date-cell {
-  position: relative; /* Required for absolute positioning of child elements */
-}
 
-/* Positioning the day numbers */
-.rbc-date-cell > a {
+
+/* Targeting the date cell */
+.rbc-button-link{
+ 
+  z-index: 2000 !important;
   position: absolute;
-  bottom: 5px; /* Adjust as needed */
-  right: 5px; /* Adjust as needed */
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
-  color: white; /* Font color */
-  border-radius: 50%; /* Optional: for round background */
-  padding: 2px 6px; /* Adjust padding as needed */
-  font-size: 0.85em; /* Adjust font size as needed */
-  z-index: 1; /* Ensure it's above the image */
+  
+  margin: -25px !important;
+  margin-top: 95px !important;
+  
+  background-color: #25282d !important;
+  color: #FFF !important;
+  width: 30px !important;
+  height: 30px !important;
+  
 }
 
-/* Adjust the image or event style if necessary */
+
+/* Optional: Adjust the event image style if necessary */
 .customEvent img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   position: relative;
-  z-index: 0; /* Ensure the image stays below the date number */
+  z-index: 0; /* Increased z-index to ensure visibility above day cells */
 }
+
+.rbc-month-view {
+  height: 1000px !important;
+}
+
+.rbc-event, .rbc-day-slot .rbc-background-event {
+  background-color: rgba(0, 0, 0, 0.0) !important;
+}
+
