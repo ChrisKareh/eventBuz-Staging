@@ -47,7 +47,7 @@ const Home = () => {
         let config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/get-events/all',
+        url: 'https://stageeventbuz.online/api/v1/get-events/all',
         headers: { 
             'Accept': 'application/json', 
             'Content-Type': 'application/json'

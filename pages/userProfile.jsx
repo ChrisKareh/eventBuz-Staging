@@ -117,7 +117,7 @@ const userProfile = () => {
         let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/switch-profile',
+        url: 'https://stageeventbuz.online/api/v1/switch-profile',
         headers: { 
             'Content-Type': 'application/json', 
             'Authorization': 'Bearer '+Token, 
@@ -184,7 +184,7 @@ const userProfile = () => {
         let config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/get-user-suppliers',
+        url: 'https://stageeventbuz.online/api/v1/get-user-suppliers',
         headers: { 
             'Content-Type': 'application/json', 
             'Authorization': 'Bearer '+ Token

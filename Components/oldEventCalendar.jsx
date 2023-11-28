@@ -17,7 +17,7 @@ const Scheduler = () => {
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
-      url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/event-schedule',
+      url: 'https://stageeventbuz.online/api/v1/event-schedule',
       headers: { 
         'Content-Type': 'application/json', 
         'Authorization': 'Bearer 51|NEv7YHB9Sylk3jwuLbKbzeSbH6KwfcjnmZ3rZw8A410046bf', 
@@ -50,7 +50,7 @@ const Scheduler = () => {
     let config = {
       method: 'GET',
       maxBodyLength: Infinity,
-      url: `https://jonathana74.sg-host.com/event-buz-backend/api/v1/event-schedule/${createEvent_ID}/${scheduleID}`,
+      url: `https://stageeventbuz.online/api/v1/event-schedule/${createEvent_ID}/${scheduleID}`,
       headers: { 
         'Content-Type': 'application/json', 
         'Authorization': 'Bearer 51|NEv7YHB9Sylk3jwuLbKbzeSbH6KwfcjnmZ3rZw8A410046bf', 
@@ -78,7 +78,7 @@ const Scheduler = () => {
     let config = {
       method: 'POST',
       maxBodyLength: Infinity,
-      url: `https://jonathana74.sg-host.com/event-buz-backend/api/v1/event-schedule/${scheduleID}`,
+      url: `https://stageeventbuz.online/api/v1/event-schedule/${scheduleID}`,
       headers: { 
         'Content-Type': 'application/json', 
         'Authorization': 'Bearer 51|NEv7YHB9Sylk3jwuLbKbzeSbH6KwfcjnmZ3rZw8A410046bf', 
@@ -135,10 +135,10 @@ const Scheduler = () => {
       dhxScheduler.plugins({ recurring: true });
       dhxScheduler.config.load_date = '%Y-%m-%d %H:%i';
       dhxScheduler.setLoadMode('day');
-      // dhxScheduler.load('https://jonathana74.sg-host.com/event-buz-backend/api/v1/event-schedule', 'json');
+      // dhxScheduler.load('https://stageeventbuz.online/api/v1/event-schedule', 'json');
 
       const dp = dhxScheduler.createDataProcessor({
-        // url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/event-schedule/',
+        // url: 'https://stageeventbuz.online/api/v1/event-schedule/',
         // mode: 'GET',
         
       });

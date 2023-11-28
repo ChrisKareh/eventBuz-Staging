@@ -54,7 +54,7 @@ const EditEvent = () => {
     //APIs
     const getEventDetails = async () => {
         try {
-            const response = await axios.get(`https://jonathana74.sg-host.com/event-buz-backend/api/v1/events/${eventID}/details`);
+            const response = await axios.get(`https://stageeventbuz.online/api/v1/events/${eventID}/details`);
             console.log("[+] EDIT DATA", response.data.data)
             populateFormWithEventData(response.data.data);
         } catch (error) {
@@ -69,7 +69,7 @@ const EditEvent = () => {
     let config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/events/type',
+        url: 'https://stageeventbuz.online/api/v1/events/type',
         
       }
       await axios.request(config)
@@ -94,7 +94,7 @@ const EditEvent = () => {
     let config = {
       method: 'get',
       maxBodyLength: Infinity,
-      url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/keyword/all',
+      url: 'https://stageeventbuz.online/api/v1/keyword/all',
       headers: { 
         'Accept': 'application/json', 
         'Content-Type': 'application/json'
@@ -122,7 +122,7 @@ const EditEvent = () => {
       let config = {
         method: 'get',
         maxBodyLength: Infinity,
-        url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/country/all',
+        url: 'https://stageeventbuz.online/api/v1/country/all',
         headers: { }
       };
     

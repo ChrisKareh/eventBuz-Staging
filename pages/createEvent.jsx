@@ -93,7 +93,7 @@ export default function CreateEvent() {
   let config = {
       method: 'get',
       maxBodyLength: Infinity,
-      url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/events/type',
+      url: 'https://stageeventbuz.online/api/v1/events/type',
       
     }
     await axios.request(config)
@@ -132,7 +132,7 @@ export default function CreateEvent() {
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url:'https://jonathana74.sg-host.com/event-buz-backend/api/v1/create-event-sponsor/',
+        url:'https://stageeventbuz.online/api/v1/create-event-sponsor/',
         headers: {
             'Content-Type':'application/json',
             'Accept':'application/json',
@@ -149,6 +149,7 @@ export default function CreateEvent() {
     axios.request(config)
     .then((response) => {
         console.log(JSON.stringify(response.data));
+        toast.success('Event Sponsor Data Saved')
     })
     .catch((error) => {
         console.log(error)
@@ -161,7 +162,7 @@ const countryListapi = () => {
   let config = {
     method: 'get',
     maxBodyLength: Infinity,
-    url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/country/all',
+    url: 'https://stageeventbuz.online/api/v1/country/all',
     headers: { }
   };
 
@@ -194,7 +195,7 @@ const getKeywords = () => {
 let config = {
   method: 'get',
   maxBodyLength: Infinity,
-  url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/keyword/all',
+  url: 'https://stageeventbuz.online/api/v1/keyword/all',
   headers: { 
     'Accept': 'application/json', 
     'Content-Type': 'application/json'
@@ -368,7 +369,7 @@ const saveStateToLocalStorage = () => {
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url:'https://jonathana74.sg-host.com/event-buz-backend/api/v1/create-event-option/',
+        url:'https://stageeventbuz.online/api/v1/create-event-option/',
         headers: {
             'Content-Type':'application/json',
             'Accept':'application/json',
@@ -410,7 +411,7 @@ const saveStateToLocalStorage = () => {
       let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/create-event-additional-field',
+        url: 'https://stageeventbuz.online/api/v1/create-event-additional-field',
         headers: { 
           'Content-Type': 'application/json', 
           'Accept': 'application/json', 
@@ -624,7 +625,7 @@ const createEventVenue = async(inputValue) => {
   let config = {
       method: 'post', 
       maxBodyLength: Infinity,
-      url: 'https://jonathana74.sg-host.com/event-buz-backend/api/v1/create-event-venue-location/',
+      url: 'https://stageeventbuz.online/api/v1/create-event-venue-location/',
       headers: {
           'Content-Type':'application/json',
           'Accept':'application/json',
